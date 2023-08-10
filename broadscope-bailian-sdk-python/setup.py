@@ -24,7 +24,7 @@ setup(
     classifiers=[
         'Intended Audience :: Developers',
         'Natural Language :: English',
-        'License :: OSI Approved :: Apache Software License',
+        'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3.7.0',
         'Programming Language :: Python :: 3.8.0',
         'Programming Language :: Python :: 3.9.0',
