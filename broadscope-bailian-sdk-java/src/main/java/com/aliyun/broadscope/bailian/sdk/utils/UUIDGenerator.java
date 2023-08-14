@@ -8,8 +8,8 @@ package com.aliyun.broadscope.bailian.sdk.utils;
 import java.util.UUID;
 
 /**
- * Title uuid generator.<br/>
- * Description uuid generator.<br/>
+ * Title uuid generator.<br>
+ * Description uuid generator.<br>
  * Created at 2023-06-07 17:20
  *
  * @author yuanci.ytb

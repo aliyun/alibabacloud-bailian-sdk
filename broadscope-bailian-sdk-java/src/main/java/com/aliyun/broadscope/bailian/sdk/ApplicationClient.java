@@ -23,8 +23,8 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Title 应用对话客户端.<br/>
- * Description 对话交互客户端流式输出.<br/>
+ * Title 应用对话客户端.<br>
+ * Description 对话交互客户端流式输出.<br>
  * Created at 2023-06-07 14:27
  *
  * @author yuanci.ytb
@@ -41,6 +41,7 @@ public class ApplicationClient {
 
     /**
      * 构造实例对象
+     * @param config 配置信息
      */
     public ApplicationClient(BaiLianConfig config) {
         checkConfig(config);
@@ -85,6 +86,11 @@ public class ApplicationClient {
                 .build();
     }
 
+    /**
+     * 非流式文本生成
+     * @param chatClientRequest prompt请求信息
+     * @return 文本生成响应结果
+     */
     public CompletionsResponse completions(CompletionsRequest chatClientRequest) {
         checkChatClientRequest(chatClientRequest);
 
@@ -139,6 +145,8 @@ public class ApplicationClient {
 
     /**
      * completions stream
+     * @param chatClientRequest prompt请求
+     * @param streamEventListener 流式响应监听器
      */
     public void streamCompletions(CompletionsRequest chatClientRequest, StreamEventListener streamEventListener) {
         checkChatClientRequest(chatClientRequest);
@@ -262,6 +270,8 @@ public class ApplicationClient {
          * event失败消息回调函数
          *
          * @param t 错误消息栈
+         * @param code 错误代码
+         * @param body 错误内容
          */
         public void onFailure(@Nullable Throwable t, int code, String body) {
 

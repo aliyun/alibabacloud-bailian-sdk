@@ -6,8 +6,8 @@
 package com.aliyun.broadscope.bailian.sdk.models;
 
 /**
- * Title access token.<br/>
- * Description access token.<br/>
+ * Title access token.<br>
+ * Description access token.<br>
  * Created at 2023-07-03 13:19
  *
  * @author yuanci.ytb

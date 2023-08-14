@@ -6,8 +6,8 @@
 package com.aliyun.broadscope.bailian.sdk.consts;
 
 /**
- * Title 配置常量类.<br/>
- * Description 配置常量类.<br/>
+ * Title 配置常量类.<br>
+ * Description 配置常量类.<br>
  * Created at 2023-08-03 14:13
  *
  * @author yuanci.ytb

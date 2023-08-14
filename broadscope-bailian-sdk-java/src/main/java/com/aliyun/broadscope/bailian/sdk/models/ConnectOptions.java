@@ -6,8 +6,8 @@
 package com.aliyun.broadscope.bailian.sdk.models;
 
 /**
- * Title 连接选项.<br/>
- * Description 连接选项.<br/>
+ * Title 连接选项.<br>
+ * Description 连接选项.<br>
  * Created at 2023-07-03 21:11
  *
  * @author yuanci.ytb

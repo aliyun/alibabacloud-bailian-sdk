@@ -6,8 +6,8 @@
 package com.aliyun.broadscope.bailian.sdk.consts;
 
 /**
- * Title HttpHeader常量.<br/>
- * Description HttpHeader常量.<br/>
+ * Title HttpHeader常量.<br>
+ * Description HttpHeader常量.<br>
  * Created at 2023-06-07 16:23
  *
  * @author yuanci.ytb

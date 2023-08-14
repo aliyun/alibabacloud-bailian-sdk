@@ -12,8 +12,8 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Title 客户端对话响应.<br/>
- * Description 客户端对话响应.<br/>
+ * Title 客户端对话响应.<br>
+ * Description 客户端对话响应.<br>
  * Created at 2023-06-07 16:33
  *
  * @author yuanci.ytb
@@ -149,7 +149,6 @@ public class CompletionsResponse implements Serializable {
          * type : response 代表最终结果 - 对应response
          * type : api 代表调用api - 对应action, actionInput, observation
          *
-         * @See ActionType
          */
         @JSONField(name = "ActionType")
         private String actionType;
