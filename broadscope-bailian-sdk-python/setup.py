@@ -20,7 +20,7 @@ setup(
     platforms="any",
     install_requires=requires,
     python_requires=">=3.7",
-    license="Apache License 2.0",
+    license="MIT License",
     classifiers=[
         'Intended Audience :: Developers',
         'Natural Language :: English',
