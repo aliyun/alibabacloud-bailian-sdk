@@ -7,7 +7,17 @@
     <groupId>com.aliyun</groupId>
     <artifactId>broadscope-bailian-sdk-java</artifactId>
     <version>1.1.4</version>
-
+    <packaging>jar</packaging>
+    <name>Alibaba Cloud SFM SDK for Java</name>
+    <url>http://www.aliyun.com</url>
+    <description>Alibaba Cloud Specific Foundation Model SDK for Java, Copyright (C) Alibaba Cloud Computing All rights reserved. 版权所有 （C）阿里云计算有限公司 http://www.aliyun.com</description>
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
@@ -45,15 +55,26 @@
         </dependency>
     </dependencies>
 
+    <scm>
+        <url>https://github.com/aliyun/alibabacloud-bailian-sdk</url>
+        <connection></connection>
+    </scm>
+    <developers>
+        <developer>
+            <id>aliyunproducts</id>
+            <name>Aliyun SDK</name>
+            <email>aliyunsdk@aliyun.com</email>
+        </developer>
+    </developers>
     <distributionManagement>
-        <repository>
-            <id>releases</id>
-            <url>http://mvnrepo.alibaba-inc.com/mvn/releases</url>
-        </repository>
         <snapshotRepository>
-            <id>snapshots</id>
-            <url>http://mvnrepo.alibaba-inc.com/mvn/snapshots</url>
+            <id>sonatype-nexus-snapshots</id>
+            <url>https://s01.oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <url>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
 
     <build>
@@ -79,11 +100,35 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>3.2.0</version>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.5</version>
                 <executions>
                     <execution>
-                        <id>generate-javadoc</id>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.2.0</version>
+                <configuration>
+                    <encoding>UTF-8</encoding>
+                    <excludePackageNames>com.aliyun.openservices.log.http.*</excludePackageNames>
+                    <tags>
+                        <tag>
+                            <name>author</name>
+                            <placement>X</placement>
+                        </tag>
+                    </tags>
+                    <additionalparam>-Xdoclint:none</additionalparam>
+                </configuration>
+                <executions>
+                    <execution>
                         <phase>package</phase>
                         <goals>
                             <goal>jar</goal>
