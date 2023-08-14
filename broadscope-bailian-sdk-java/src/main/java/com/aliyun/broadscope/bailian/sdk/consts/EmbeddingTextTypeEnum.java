@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.Optional;
 
 /**
- * Title Embedding文本类型枚举类.<br/>
- * Description Embedding文本类型枚举类.<br/>
+ * Title Embedding文本类型枚举类.<br>
+ * Description Embedding文本类型枚举类.<br>
  * Created at 2023-07-27 16:33
  *
  * @author yuanci.ytb
