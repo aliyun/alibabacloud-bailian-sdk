@@ -9,4 +9,4 @@ from broadscope_bailian.api import (
 api_key = os.environ.get("BROADSCOPE_API_KEY")
 api_base = os.environ.get("BROADSCOPE_API_BASE")
 pop_endpoint = "bailian.cn-beijing.aliyuncs.com"
-api_version = "1.1.3"
+api_version = "1.1.5"
