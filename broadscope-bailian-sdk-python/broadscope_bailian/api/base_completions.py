@@ -1,7 +1,7 @@
 import json
 import threading
 import uuid
-from typing import Dict, Any, List
+from typing import Dict, Any, List, Union, Tuple
 
 import requests
 
@@ -54,7 +54,8 @@ class BaseCompletions:
                 biz_params: Dict = None,
                 has_thoughts: bool = False,
                 stream: bool = False,
-                doc_reference_type: str = None):
+                doc_reference_type: str = None,
+                timeout: Union[float, Tuple[float, float]] = None):
 
         headers = dict()
         headers["Content-Type"] = "application/json;charset=UTF-8"
@@ -94,7 +95,8 @@ class BaseCompletions:
                                url=url,
                                headers=headers,
                                data=json.dumps(data),
-                               stream=stream)
+                               stream=stream,
+                               timeout=timeout)
 
         if not resp.ok:
             raise CompletionsRequestError("completion request error", resp.status_code, resp.text)
