@@ -55,6 +55,9 @@ class BaseCompletions:
                 has_thoughts: bool = False,
                 stream: bool = False,
                 doc_reference_type: str = None,
+                top_k: int = None,
+                seed: int = None,
+                use_raw_prompt: bool = None,
                 timeout: Union[float, Tuple[float, float]] = None):
 
         headers = dict()
@@ -76,6 +79,14 @@ class BaseCompletions:
             for v in history:
                 h.append(v.to_dict())
 
+        parameters = {}
+        if top_k is not None:
+            parameters["TopK"] = top_k
+        if seed is not None:
+            parameters["Seed"] = seed
+        if use_raw_prompt is not None:
+            parameters["UseRawPrompt"] = use_raw_prompt
+
         data = {
             "RequestId": request_id,
             "SessionId": session_id,
@@ -86,7 +97,8 @@ class BaseCompletions:
             "Stream": stream,
             "HasThoughts": has_thoughts,
             "BizParams": biz_params,
-            "DocReferenceType": doc_reference_type
+            "DocReferenceType": doc_reference_type,
+            "Parameters": parameters
         }
 
         url = "%s%s" % (broadscope_bailian.api_base, "/v2/app/completions")
