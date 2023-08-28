@@ -125,7 +125,7 @@
                             <placement>X</placement>
                         </tag>
                     </tags>
-                    <additionalOptions>-Xdoclint:none</additionalOptions>
+                    <additionalparam>-Xdoclint:none</additionalparam>
                 </configuration>
                 <executions>
                     <execution>
