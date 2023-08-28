@@ -87,50 +87,8 @@ public class CompletionsRequest implements Serializable {
     @JSONField(name = "DocReferenceType")
     private String docReferenceType;
 
-    public static class ChatQaPair implements Serializable {
-        /**
-         * 用户的query
-         */
-        @JSONField(name = "User")
-        private String user;
-
-        /**
-         * 模型的答案
-         */
-        @JSONField(name = "Bot")
-        private String bot;
-
-        public ChatQaPair() {
-        }
-
-        public ChatQaPair(String user, String bot) {
-            this.user = user;
-            this.bot = bot;
-        }
-
-        public String getUser() {
-            return user;
-        }
-
-        public void setUser(String user) {
-            this.user = user;
-        }
-
-        public String getBot() {
-            return bot;
-        }
-
-        public void setBot(String bot) {
-            this.bot = bot;
-        }
-
-        @Override
-        public String toString() {
-            return "ChatQaPair{" + "user='" + user + '\'' +
-                   ", bot='" + bot + '\'' +
-                   '}';
-        }
-    }
+    @JSONField(name = "Parameters")
+    private Parameter parameters;
 
     public String getRequestId() {
         return requestId;
@@ -222,6 +180,15 @@ public class CompletionsRequest implements Serializable {
         return this;
     }
 
+    public Parameter getParameters() {
+        return parameters;
+    }
+
+    public CompletionsRequest setParameters(Parameter parameters) {
+        this.parameters = parameters;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "CompletionsRequest{" + "requestId='" + requestId + '\'' +
@@ -234,6 +201,111 @@ public class CompletionsRequest implements Serializable {
                 ", hasThoughts=" + hasThoughts +
                 ", history=" + history +
                 ", docReferenceType='" + docReferenceType + '\'' +
+                ", parameters=" + parameters +
                 '}';
+    }
+
+    public static class ChatQaPair implements Serializable {
+        private static final long serialVersionUID = -3051114257693095299L;
+        /**
+         * 用户的query
+         */
+        @JSONField(name = "User")
+        private String user;
+
+        /**
+         * 模型的答案
+         */
+        @JSONField(name = "Bot")
+        private String bot;
+
+        public ChatQaPair() {
+        }
+
+        public ChatQaPair(String user, String bot) {
+            this.user = user;
+            this.bot = bot;
+        }
+
+        public String getUser() {
+            return user;
+        }
+
+        public void setUser(String user) {
+            this.user = user;
+        }
+
+        public String getBot() {
+            return bot;
+        }
+
+        public void setBot(String bot) {
+            this.bot = bot;
+        }
+
+        @Override
+        public String toString() {
+            return "ChatQaPair{" + "user='" + user + '\'' +
+                    ", bot='" + bot + '\'' +
+                    '}';
+        }
+    }
+
+    public static class Parameter implements Serializable{
+
+        private static final long serialVersionUID = 8408299257902302971L;
+
+        /**
+         * 模型参数
+         */
+        @JSONField(name = "TopK")
+        private Integer topK;
+
+        /**
+         * 随机种子
+         */
+        @JSONField(name = "Seed")
+        private Integer seed;
+
+        /**
+         * 是否使用原始的prompt
+         */
+        @JSONField(name = "UseRawPrompt")
+        private Boolean useRawPrompt;
+
+        public Integer getTopK() {
+            return topK;
+        }
+
+        public Parameter setTopK(Integer topK) {
+            this.topK = topK;
+            return this;
+        }
+
+        public Integer getSeed() {
+            return seed;
+        }
+
+        public Parameter setSeed(Integer seed) {
+            this.seed = seed;
+            return this;
+        }
+
+        public Boolean isUseRawPrompt() {
+            return useRawPrompt;
+        }
+
+        public Parameter setUseRawPrompt(Boolean useRawPrompt) {
+            this.useRawPrompt = useRawPrompt;
+            return this;
+        }
+
+        @Override
+        public String toString() {
+            return "Parameter{" + "topK=" + topK +
+                    ", seed=" + seed +
+                    ", useRawPrompt=" + useRawPrompt +
+                    '}';
+        }
     }
 }

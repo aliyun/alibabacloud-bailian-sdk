@@ -50,11 +50,10 @@ public class TestChatClient {
                 .setApiKey(accessToken.getToken());
 
         String appId = "******";
-        String prompt = "FreeSwitch支持哪些操作系统";
+        String prompt = "今天的天气怎么样";
         CompletionsRequest request = new CompletionsRequest()
                 .setAppId(appId)
-                .setPrompt(prompt)
-                .setDocReferenceType(DocReferenceTypeEnum.SIMPLE.getType());
+                .setPrompt(prompt);
 
 /*
         List<CompletionsRequest.ChatQaPair> history = new ArrayList<>();
@@ -80,16 +79,15 @@ public class TestChatClient {
         AccessToken accessToken = accessTokenClient.createToken();
         //TODO token过期时间为24小时, 应用侧需要缓存token和过期时间, 过期间重新生成token
 
-        String appId = "******";
         BaiLianConfig config = new BaiLianConfig()
-                .setApiKey("******");
+                .setApiKey(accessToken.getToken());
 
-        String prompt = "帮我定一下酒店";
+        String appId = "******";
+        String prompt = "FreeSwitch支持哪些操作系统？";
         CompletionsRequest request = new CompletionsRequest()
                 .setAppId(appId)
                 .setPrompt(prompt)
-                .setHasThoughts(true);
-
+                .setDocReferenceType(DocReferenceTypeEnum.SIMPLE.getType());
 
         ApplicationClient client = new ApplicationClient(config);
         CountDownLatch countDownLatch = new CountDownLatch(1);
@@ -123,6 +121,8 @@ public class TestChatClient {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+
+        System.exit(0);
     }
 
     public static void testStreamCompletionsWithSessionId() {
