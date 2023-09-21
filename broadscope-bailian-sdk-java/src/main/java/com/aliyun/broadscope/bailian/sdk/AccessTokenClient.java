@@ -25,6 +25,8 @@ import org.apache.commons.lang3.StringUtils;
  */
 
 public class AccessTokenClient {
+    private static final int TOKEN_CREATE_THRESHOLD_MINUTES = 10;
+
     private final String accessKeyId;
 
     private final String accessKeySecret;
@@ -33,10 +35,22 @@ public class AccessTokenClient {
 
     private String endpoint = ConfigConsts.POP_ENDPOINT;
 
+    private AccessToken accessToken;
+
     public AccessTokenClient(String accessKeyId, String accessKeySecret, String agentKey) {
         this.accessKeyId = accessKeyId;
         this.accessKeySecret = accessKeySecret;
         this.agentKey = agentKey;
+    }
+
+    public String getToken() {
+        long timestamp = System.currentTimeMillis() / 1000;
+        if (accessToken == null ||
+                (accessToken.getExpiredTime() - TOKEN_CREATE_THRESHOLD_MINUTES * 60) < timestamp) {
+            accessToken = createToken();
+        }
+
+        return accessToken.getToken();
     }
 
     public AccessToken createToken() {
