@@ -6,11 +6,12 @@
 package com.aliyun.broadscope.bailian.sdk;
 
 import com.aliyun.bailian20230601.Client;
-import com.aliyun.bailian20230601.models.*;
+import com.aliyun.bailian20230601.models.CreateTextEmbeddingsRequest;
+import com.aliyun.bailian20230601.models.CreateTextEmbeddingsResponse;
+import com.aliyun.bailian20230601.models.CreateTextEmbeddingsResponseBody;
 import com.aliyun.broadscope.bailian.sdk.consts.ConfigConsts;
 import com.aliyun.broadscope.bailian.sdk.consts.DocReferenceTypeEnum;
 import com.aliyun.broadscope.bailian.sdk.consts.EmbeddingTextTypeEnum;
-import com.aliyun.broadscope.bailian.sdk.models.AccessToken;
 import com.aliyun.broadscope.bailian.sdk.models.BaiLianConfig;
 import com.aliyun.broadscope.bailian.sdk.models.CompletionsRequest;
 import com.aliyun.broadscope.bailian.sdk.models.CompletionsResponse;
@@ -43,14 +44,12 @@ public class TestChatClient {
         String agentKey = "******";
 
         AccessTokenClient accessTokenClient = new AccessTokenClient(accessKeyId, accessKeySecret, agentKey);
-        AccessToken accessToken = accessTokenClient.createToken();
-        //TODO token过期时间为24小时, 应用侧需要缓存token和过期时间, 过期间重新生成token
-
+        String token = accessTokenClient.getToken();
         BaiLianConfig config = new BaiLianConfig()
-                .setApiKey(accessToken.getToken());
+                .setApiKey(token);
 
         String appId = "******";
-        String prompt = "今天的天气怎么样";
+        String prompt = "实时互动产业发展研究报告包含哪些内容?";
         CompletionsRequest request = new CompletionsRequest()
                 .setAppId(appId)
                 .setPrompt(prompt);
@@ -76,14 +75,13 @@ public class TestChatClient {
         String agentKey = "******";
 
         AccessTokenClient accessTokenClient = new AccessTokenClient(accessKeyId, accessKeySecret, agentKey);
-        AccessToken accessToken = accessTokenClient.createToken();
-        //TODO token过期时间为24小时, 应用侧需要缓存token和过期时间, 过期间重新生成token
 
+        String token = accessTokenClient.getToken();
         BaiLianConfig config = new BaiLianConfig()
-                .setApiKey(accessToken.getToken());
+                .setApiKey(token);
 
         String appId = "******";
-        String prompt = "FreeSwitch支持哪些操作系统？";
+        String prompt = "实时互动产业发展研究报告包含哪些内容?";
         CompletionsRequest request = new CompletionsRequest()
                 .setAppId(appId)
                 .setPrompt(prompt)
@@ -131,12 +129,11 @@ public class TestChatClient {
         String agentKey = "******";
 
         AccessTokenClient accessTokenClient = new AccessTokenClient(accessKeyId, accessKeySecret, agentKey);
-        AccessToken accessToken = accessTokenClient.createToken();
-        //TODO token过期时间为24小时, 应用侧需要缓存token和过期时间, 过期间重新生成token
+        String token = accessTokenClient.getToken();
 
         String appId = "******";
         BaiLianConfig config = new BaiLianConfig()
-                .setApiKey(accessToken.getToken());
+                .setApiKey(token);
 
         String sessionId = UUIDGenerator.generate();
 

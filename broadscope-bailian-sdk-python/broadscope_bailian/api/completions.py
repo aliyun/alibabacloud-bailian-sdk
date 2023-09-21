@@ -21,6 +21,7 @@ class Completions(BaseCompletions):
              top_k: int = None,
              seed: int = None,
              use_raw_prompt: bool = None,
+             doc_tag_ids: List[int] = None,
              timeout: Union[float, Tuple[float, float]] = None):
         resp = self.reqeust(app_id=app_id,
                             prompt=prompt,
@@ -35,6 +36,7 @@ class Completions(BaseCompletions):
                             top_k=top_k,
                             seed=seed,
                             use_raw_prompt=use_raw_prompt,
+                            doc_tag_ids=doc_tag_ids,
                             timeout=timeout)
 
         if stream:

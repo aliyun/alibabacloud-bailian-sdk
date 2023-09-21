@@ -90,6 +90,12 @@ public class CompletionsRequest implements Serializable {
     @JSONField(name = "Parameters")
     private Parameter parameters;
 
+    /**
+     * 文档标签ID
+     */
+    @JSONField(name = "DocTagIds")
+    private List<Long> docTagIds;
+
     public String getRequestId() {
         return requestId;
     }
@@ -189,6 +195,15 @@ public class CompletionsRequest implements Serializable {
         return this;
     }
 
+    public List<Long> getDocTagIds() {
+        return docTagIds;
+    }
+
+    public CompletionsRequest setDocTagIds(List<Long> docTagIds) {
+        this.docTagIds = docTagIds;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "CompletionsRequest{" + "requestId='" + requestId + '\'' +
@@ -202,6 +217,7 @@ public class CompletionsRequest implements Serializable {
                 ", history=" + history +
                 ", docReferenceType='" + docReferenceType + '\'' +
                 ", parameters=" + parameters +
+                ", docTagIds=" + docTagIds +
                 '}';
     }
 

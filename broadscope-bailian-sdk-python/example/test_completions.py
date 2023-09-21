@@ -1,3 +1,4 @@
+import json
 import unittest
 
 from alibabacloud_bailian20230601.client import Client
@@ -14,16 +15,16 @@ class CompletionTest(unittest.TestCase):
         access_key_secret = "******"
         agent_key = "******"
 
-        client = broadscope_bailian.AccessTokenClient(access_key_id=access_key_id, access_key_secret=access_key_secret)
-        token, expired_time = client.create_token(agent_key=agent_key)
-        # TODO 应用侧需要自己缓存token和过期时间, 过期前重新生成
-
+        client = broadscope_bailian.AccessTokenClient(access_key_id=access_key_id,
+                                                      access_key_secret=access_key_secret,
+                                                      agent_key=agent_key)
+        token = client.get_token()
         broadscope_bailian.api_key = token
 
         app_id = "******"
         prompt = "FreeSwitch支持哪些操作系统"
 
-        resp = broadscope_bailian.Completions().call(app_id=app_id, prompt=prompt, doc_reference_type="simple")
+        resp = broadscope_bailian.Completions().call(app_id=app_id, prompt=prompt)
         print(resp)
 
     def test_completions_history(self):
@@ -31,10 +32,10 @@ class CompletionTest(unittest.TestCase):
         access_key_secret = "******"
         agent_key = "******"
 
-        client = broadscope_bailian.AccessTokenClient(access_key_id=access_key_id, access_key_secret=access_key_secret)
-        token, expired_time = client.create_token(agent_key=agent_key)
-        # TODO 应用侧需要自己缓存token和过期时间, 过期前重新生成
-
+        client = broadscope_bailian.AccessTokenClient(access_key_id=access_key_id,
+                                                      access_key_secret=access_key_secret,
+                                                      agent_key=agent_key)
+        token = client.get_token()
         broadscope_bailian.api_key = token
 
         app_id = "******"
@@ -51,9 +52,10 @@ class CompletionTest(unittest.TestCase):
         access_key_secret = "******"
         agent_key = "******"
 
-        client = broadscope_bailian.AccessTokenClient(access_key_id=access_key_id, access_key_secret=access_key_secret)
-        token, expired_time = client.create_token(agent_key=agent_key)
-        # TODO 应用侧需要自己缓存token和过期时间, 过期前重新生成
+        client = broadscope_bailian.AccessTokenClient(access_key_id=access_key_id,
+                                                      access_key_secret=access_key_secret,
+                                                      agent_key=agent_key)
+        token = client.get_token()
 
         broadscope_bailian.api_key = token
         app_id = "******"
@@ -87,6 +89,7 @@ class CompletionTest(unittest.TestCase):
 
         for embedding in body.data.embeddings:
             print("index: %s, embeddings: %s\n" % (embedding.text_index, embedding.embedding))
+
 
 if __name__ == '__main__':
     unittest.main()

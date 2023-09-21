@@ -102,6 +102,8 @@ public class ApplicationClient {
                 .add(HttpHeaderConsts.Keys.AUTHORIZATION, "Bearer " + this.config.getApiKey())
                 .build();
 
+        chatClientRequest.setStream(false);
+
         MediaType mediaType = MediaType.parse(HttpHeaderConsts.MediaType.APPLICATION_JSON_UTF8_VALUE);
         String data = JSON.toJSONString(chatClientRequest);
         RequestBody requestBody = RequestBody.create(mediaType, data);

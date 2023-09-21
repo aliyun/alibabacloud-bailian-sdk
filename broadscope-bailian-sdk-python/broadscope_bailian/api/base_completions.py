@@ -58,6 +58,7 @@ class BaseCompletions:
                 top_k: int = None,
                 seed: int = None,
                 use_raw_prompt: bool = None,
+                doc_tag_ids: List[int] = None,
                 timeout: Union[float, Tuple[float, float]] = None):
 
         headers = dict()
@@ -98,7 +99,8 @@ class BaseCompletions:
             "HasThoughts": has_thoughts,
             "BizParams": biz_params,
             "DocReferenceType": doc_reference_type,
-            "Parameters": parameters
+            "Parameters": parameters,
+            "DocTagIds": doc_tag_ids
         }
 
         url = "%s%s" % (broadscope_bailian.api_base, "/v2/app/completions")
