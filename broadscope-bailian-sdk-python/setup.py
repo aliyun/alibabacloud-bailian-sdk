@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 PACKAGE = "broadscope_bailian"
-VERSION = "1.1.7"
+VERSION = "1.1.8"
 
 requires = [
     'requests >= 2.20',

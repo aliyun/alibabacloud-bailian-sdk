@@ -17,7 +17,7 @@ class AccessToken:
 class AccessTokenClient:
     def __init__(self, access_key_id: str,
                  access_key_secret: str,
-                 agent_key: str = None,
+                 agent_key: str,
                  endpoint: str = None):
         if endpoint is None or endpoint == "":
             endpoint = broadscope_bailian.pop_endpoint
@@ -44,7 +44,11 @@ class AccessTokenClient:
 
         token_body = token_response.body
         if not token_body.success:
-            raise RuntimeError("create token error, code=%s, message=%s" % (token_body.code, token_body.message))
+            request_id = token_body.request_id
+            if not request_id:
+                request_id = token_response.headers.get("x-acs-request-id")
+            raise RuntimeError("create token error, code=%s, message=%s RequestId: %s"
+                               % (token_body.code, token_body.message, request_id))
 
         return token_body.data.token, token_body.data.expired_time
 

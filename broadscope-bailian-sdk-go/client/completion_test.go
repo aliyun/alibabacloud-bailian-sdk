@@ -36,8 +36,7 @@ func TestCreateCompletion(t *testing.T) {
 	}
 
 	cc := client.CompletionClient{Token: &token}
-
-	prompt := "帮我生成一篇500字的文章，描述一下春秋战国的政治、军事和经济"
+	prompt := "帮我生成一篇200字的文章，描述一下春秋战国的政治、军事和经济"
 
 	request := &client.CompletionRequest{}
 	request.SetAppId(appId)
@@ -50,11 +49,12 @@ func TestCreateCompletion(t *testing.T) {
 	}
 
 	if !response.Success {
-		t.Errorf("%v\n", *response.Message)
+		t.Errorf("failed to create completion, requestId: %s, code: %s, message: %s\n", *response.RequestId,
+			*response.Code, *response.Message)
 		return
 	}
 
-	t.Logf("response : %s\n", *response)
+	t.Logf("requestId: %s, text : %s\n", *response.RequestId, *response.Data.Text)
 }
 
 func TestCreateStreamCompletion(t *testing.T) {
@@ -73,7 +73,6 @@ func TestCreateStreamCompletion(t *testing.T) {
 	}
 
 	cc := client.CompletionClient{Token: &token}
-
 	prompt := "帮我生成一篇500字的文章，描述一下春秋战国的政治、军事和经济"
 
 	request := &client.CompletionRequest{}
@@ -82,7 +81,7 @@ func TestCreateStreamCompletion(t *testing.T) {
 
 	response, err := cc.CreateStreamCompletion(request)
 	if err != nil {
-		t.Errorf("failed to complete, err: %v\n", err)
+		t.Errorf("failed to create completion, err: %v\n", err)
 		return
 	}
 
@@ -91,12 +90,12 @@ func TestCreateStreamCompletion(t *testing.T) {
 			t.Errorf("get result with error, requestId: %s, code: %s, message: %s\n", *result.RequestId,
 				*result.Code, *result.Message)
 		} else {
-			t.Logf("result: %s\n", *result)
+			t.Logf("requestId: %s, text: %s\n", *result.RequestId, *result.Data.Text)
 		}
 	}
 }
 
-func TestCreateCompletion_WithParams(t *testing.T) {
+func TestCreateCompletionWithParams(t *testing.T) {
 	accessKeyId := os.Getenv("ACCESS_KEY_ID")
 	accessKeySecret := os.Getenv("ACCESS_KEY_SECRET")
 
@@ -112,7 +111,6 @@ func TestCreateCompletion_WithParams(t *testing.T) {
 	}
 
 	cc := client.CompletionClient{Token: &token}
-
 	prompt := "云南近5年GNP总和是多少"
 
 	request := &client.CompletionRequest{}
@@ -123,7 +121,6 @@ func TestCreateCompletion_WithParams(t *testing.T) {
 	request.SetTopP(0.2)
 
 	//开启历史上下文, sessionId需要采用uuid保证唯一性, 后续传入相同sessionId，百炼平台将自动维护历史上下文
-	//注: 同时传入
 	sessionId := strings.ReplaceAll(uuid.New().String(), "-", "")
 	request.SetSessionId(sessionId)
 
@@ -138,11 +135,12 @@ func TestCreateCompletion_WithParams(t *testing.T) {
 	request.SetParameters(modelParameter)
 
 	//设置文档标签tagId，设置后，文档检索召回时，仅从tagIds对应的文档范围进行召回
-	request.SetDocTagIds([]int64{200})
+	request.SetDocTagIds([]int64{100, 101})
 
 	//返回文档检索的文档引用数据
 	request.SetDocReferenceType(client.DocReferenceTypeSimple)
 
+	//自然语言转sql调用示例
 	sqlSchema := "{" +
 		"    \"sqlInput\": {" +
 		"      \"synonym_infos\": \"国民生产总值: GNP|Gross National Product\"," +
@@ -176,6 +174,7 @@ func TestCreateCompletion_WithParams(t *testing.T) {
 	}
 	request.SetBizParams(&data)
 
+	//调用文本生成接口
 	response, err := cc.CreateCompletion(request)
 	if err != nil {
 		t.Errorf("%v\n", err)
@@ -183,9 +182,10 @@ func TestCreateCompletion_WithParams(t *testing.T) {
 	}
 
 	if !response.Success {
-		t.Errorf("%v\n", *response.Message)
+		t.Errorf("failed to create completion, requestId: %s, code: %s, message: %s\n", *response.RequestId,
+			*response.Code, *response.Message)
 		return
 	}
 
-	t.Logf("response : %s\n", *response)
+	t.Logf("requestId: %s, text: %s\n", *response.RequestId, *response.Data.Text)
 }

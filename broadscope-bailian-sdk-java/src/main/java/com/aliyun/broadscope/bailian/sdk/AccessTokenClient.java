@@ -77,8 +77,18 @@ public class AccessTokenClient {
             CreateTokenRequest request = new CreateTokenRequest().setAgentKey(agentKey);
             CreateTokenResponse response = client.createToken(request);
             CreateTokenResponseBody body = response.getBody();
-            if (body == null || !body.success) {
-                String error = body == null ? "create token error" : body.message;
+            if (body == null) {
+                String error = "create token error";
+                throw new BaiLianSdkException(error);
+            }
+
+            if (!body.success) {
+                String requestId = body.requestId;
+                if (StringUtils.isBlank(requestId)) {
+                    requestId = response.getHeaders().get("x-acs-request-id");
+                }
+
+                String error = "failed to create token, reason: " + body.message + " RequestId: " + requestId;
                 throw new BaiLianSdkException(error);
             }
 
