@@ -17,7 +17,7 @@ class AccessToken:
 class AccessTokenClient:
     def __init__(self, access_key_id: str,
                  access_key_secret: str,
-                 agent_key: str,
+                 agent_key: str = None,
                  endpoint: str = None):
         if endpoint is None or endpoint == "":
             endpoint = broadscope_bailian.pop_endpoint

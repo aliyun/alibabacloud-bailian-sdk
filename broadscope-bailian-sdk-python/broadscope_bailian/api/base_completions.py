@@ -41,7 +41,7 @@ class CompletionsRequestError(Exception):
 class BaseCompletions:
     """ 调用百联进行文本生成 """
 
-    def __init__(self, token, endpoint=None):
+    def __init__(self, token=None, endpoint=None):
         self.token = token
         self.endpoint = endpoint
 
