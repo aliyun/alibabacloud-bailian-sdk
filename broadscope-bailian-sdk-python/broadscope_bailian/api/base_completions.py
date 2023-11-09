@@ -41,6 +41,10 @@ class CompletionsRequestError(Exception):
 class BaseCompletions:
     """ 调用百联进行文本生成 """
 
+    def __init__(self, token=None, endpoint=None):
+        self.token = token
+        self.endpoint = endpoint
+
     @classmethod
     def call(cls, *args, **kwargs) -> Any:
         raise NotImplementedError()
@@ -61,14 +65,14 @@ class BaseCompletions:
                 doc_tag_ids: List[int] = None,
                 timeout: Union[float, Tuple[float, float]] = None):
 
+        self.validate(app_id=app_id, prompt=prompt)
+
         headers = dict()
         headers["Content-Type"] = "application/json;charset=UTF-8"
-        headers["Authorization"] = "Bearer %s" % broadscope_bailian.api_key
+        headers["Authorization"] = "Bearer %s" % self.token
 
         if stream:
             headers["Accept"] = "text/event-stream"
-
-        self.validate(app_id=app_id, prompt=prompt)
 
         if request_id is None:
             uuid_obj = uuid.uuid4()
@@ -103,7 +107,7 @@ class BaseCompletions:
             "DocTagIds": doc_tag_ids
         }
 
-        url = "%s%s" % (broadscope_bailian.api_base, "/v2/app/completions")
+        url = "%s%s" % (self.endpoint, "/v2/app/completions")
         session = self.__get_session()
         resp = session.request("POST",
                                url=url,
@@ -124,14 +128,19 @@ class BaseCompletions:
 
         return _thread_context.session
 
-    @staticmethod
-    def validate(app_id: str,
+    def validate(self, app_id: str,
                  prompt: str):
+        if self.token is None:
+            self.token = broadscope_bailian.api_key
+
         if broadscope_bailian.api_base is None:
             broadscope_bailian.api_base = "https://bailian.aliyuncs.com"
 
-        if broadscope_bailian.api_key is None:
-            raise ValueError("you need to set broadscope.api_key before calling api")
+        if self.endpoint is None:
+            self.endpoint = broadscope_bailian.api_base
+
+        if self.token is None:
+            raise ValueError("you need to set token before calling api")
 
         if app_id is None or app_id == '':
             raise ValueError("app id is required")
