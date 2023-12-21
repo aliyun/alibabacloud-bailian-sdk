@@ -5,6 +5,8 @@
  */
 package com.aliyun.broadscope.bailian.sdk.models;
 
+import com.aliyun.broadscope.bailian.sdk.consts.ConfigConsts;
+
 /**
  * Title 百炼客户端config.<br>
  * Description 百炼客户端config.<br>
@@ -15,6 +17,7 @@ package com.aliyun.broadscope.bailian.sdk.models;
  * @since jdk8
  */
 
+@Deprecated
 public class BaiLianConfig {
     /**
      * 百炼API key
@@ -24,7 +27,7 @@ public class BaiLianConfig {
     /**
      * 通义专属大模型服务端请求地址, 如生产环境、预发、私有化部署地址
      */
-    private String endpoint = "https://bailian.aliyuncs.com";
+    private String endpoint = ConfigConsts.ENDPOINT;
 
     public String getApiKey() {
         return apiKey;

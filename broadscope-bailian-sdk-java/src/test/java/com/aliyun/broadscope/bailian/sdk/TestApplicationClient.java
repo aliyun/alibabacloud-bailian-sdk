@@ -20,13 +20,14 @@ import com.aliyun.broadscope.bailian.sdk.models.ConnectOptions;
 import com.aliyun.broadscope.bailian.sdk.utils.UUIDGenerator;
 import com.aliyun.teaopenapi.models.Config;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.jetbrains.annotations.Nullable;
 import org.junit.Test;
+import reactor.core.publisher.Flux;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Title 对话客户端测试用例.<br/>
@@ -50,15 +51,15 @@ public class TestApplicationClient {
 
         AccessTokenClient accessTokenClient = new AccessTokenClient(accessKeyId, accessKeySecret, agentKey);
         String token = accessTokenClient.getToken();
-        BaiLianConfig config = new BaiLianConfig()
-                .setApiKey(token);
+        ApplicationClient client = ApplicationClient.builder()
+                .token(token)
+                .build();
 
         String prompt = "帮我生成一篇200字的文章，描述一下春秋战国的政治、军事和经济";
         CompletionsRequest request = new CompletionsRequest()
                 .setAppId(appId)
                 .setPrompt(prompt);
 
-        ApplicationClient client = new ApplicationClient(config);
         CompletionsResponse response = client.completions(request);
 
         if (!response.isSuccess()) {
@@ -67,7 +68,11 @@ public class TestApplicationClient {
             return;
         }
 
-        System.out.printf("requestId: %s, text: %s\n", response.getRequestId(), response.getData().getText());
+        System.out.printf("requestId: %s, text: %s, ", response.getRequestId(), response.getData().getText());
+        if (response.getData().getUsage() != null && response.getData().getUsage().size() > 0) {
+            CompletionsResponse.Usage usage = response.getData().getUsage().get(0);
+            System.out.printf("input tokens: %d, output tokens: %d\n", usage.getInputTokens(), usage.getOutputTokens());
+        }
     }
 
     @Test
@@ -79,52 +84,41 @@ public class TestApplicationClient {
         String appId = System.getenv("APP_ID");
 
         AccessTokenClient accessTokenClient = new AccessTokenClient(accessKeyId, accessKeySecret, agentKey);
-
         String token = accessTokenClient.getToken();
-        BaiLianConfig config = new BaiLianConfig()
-                .setApiKey(token);
+        ApplicationClient client = ApplicationClient.builder()
+                .token(token)
+                .build();
 
         String prompt = "帮我生成一篇200字的文章，描述一下春秋战国的政治、军事和经济";
         CompletionsRequest request = new CompletionsRequest()
                 .setAppId(appId)
                 .setPrompt(prompt);
 
-        ApplicationClient client = new ApplicationClient(config);
-        CountDownLatch countDownLatch = new CountDownLatch(1);
-        client.streamCompletions(request, new ApplicationClient.StreamEventListener() {
-            @Override
-            public void onOpen() {
-                System.out.println("onOpen");
-            }
-
-            @Override
-            public void onClosed() {
-                System.out.println("onClosed");
-                countDownLatch.countDown();
-            }
-
-            @Override
-            public void onEvent(CompletionsResponse response) {
-                if (!response.isSuccess()) {
-                    System.out.printf("failed to create completion, requestId: %s, code: %s, message: %s\n",
-                            response.getRequestId(), response.getCode(), response.getMessage());
-                } else {
-                    System.out.printf("requestId: %s, text=%s\n", response.getRequestId(), response.getData().getText());
+        CountDownLatch latch = new CountDownLatch(1);
+        Flux<CompletionsResponse> response = client.streamCompletions(request);
+        response.subscribe(
+                data -> {
+                    if (data.isSuccess()) {
+                        System.out.printf("requestId: %s, text: %s\n", data.getRequestId(), data.getData().getText());
+                    } else {
+                        System.out.printf("failed to create completion, requestId: %s, code: %s, message: %s\n",
+                                data.getRequestId(), data.getCode(), data.getMessage());
+                    }
+                },
+                err -> {
+                    System.out.printf("failed to create completion, err: %s\n", ExceptionUtils.getStackTrace(err));
+                    latch.countDown();
+                },
+                () -> {
+                    System.out.println("create completion completely");
+                    latch.countDown();
                 }
-            }
-
-            @Override
-            public void onFailure(@Nullable Throwable t, int code, String body) {
-                String errMsg = t == null ? "" : ExceptionUtils.getStackTrace(t);
-                System.out.printf("onFailure, code: %d, body: %s, err: %s\n", code, body, errMsg);
-                countDownLatch.countDown();
-            }
-        });
+        );
 
         try {
-            countDownLatch.await();
+            latch.await(30, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            throw new BaiLianSdkException(e);
         }
     }
 
@@ -138,8 +132,11 @@ public class TestApplicationClient {
 
         AccessTokenClient accessTokenClient = new AccessTokenClient(accessKeyId, accessKeySecret, agentKey);
         String token = accessTokenClient.getToken();
-        BaiLianConfig config = new BaiLianConfig()
-                .setApiKey(token);
+
+        ApplicationClient client = ApplicationClient.builder()
+                .token(token)
+                .connectOptions(new ConnectOptions(30000, 60000, 60000))
+                .build();
 
         String prompt = "云南近五年GNP总和是多少";
 
@@ -162,11 +159,13 @@ public class TestApplicationClient {
         history.add(chatQaPair2);
         request.setHistory(history);
 
-        //设置模型参数topK，seed
+        //设置模型参数topK，seed, temperature和max tokens
         CompletionsRequest.Parameter modelParameter = new CompletionsRequest.Parameter()
                 .setTopK(50)
                 .setSeed(2222)
-                .setUseRawPrompt(true);
+                .setUseRawPrompt(true)
+                .setTemperature(0.3)
+                .setMaxTokens(20);
         request.setParameters(modelParameter);
 
         //设置文档标签tagId，设置后，文档检索召回时，仅从tagIds对应的文档范围进行召回
@@ -202,7 +201,6 @@ public class TestApplicationClient {
                 "  }";
         request.setBizParams(JSON.parseObject(sqlSchema));
 
-        ApplicationClient client = new ApplicationClient(config, new ConnectOptions(30000, 60000, 60000));
         CompletionsResponse response = client.completions(request);
         if (!response.isSuccess()) {
             System.out.printf("failed to create completion, requestId: %s, code: %s, message: %s",

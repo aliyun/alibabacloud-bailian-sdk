@@ -26,7 +26,7 @@ public class CompletionsResponse implements Serializable {
      * 请求处理是否成功
      */
     @JSONField(name = "Success")
-    private boolean success = true;
+    private Boolean success = true;
 
     /**
      * 请求失败code
@@ -85,6 +85,12 @@ public class CompletionsResponse implements Serializable {
         @JSONField(name = "DocReferences")
         private List<DocReference> docReferences;
 
+        /**
+         * 应用级别的token消耗
+         */
+        @JSONField(name = "Usage")
+        private List<Usage> usage;
+
         public String getResponseId() {
             return responseId;
         }
@@ -125,6 +131,14 @@ public class CompletionsResponse implements Serializable {
             this.docReferences = docReferences;
         }
 
+        public List<Usage> getUsage() {
+            return usage;
+        }
+
+        public void setUsage(List<Usage> usage) {
+            this.usage = usage;
+        }
+
         @Override
         public String toString() {
             return "Data{" + "responseId='" + responseId + '\'' +
@@ -132,6 +146,7 @@ public class CompletionsResponse implements Serializable {
                     ", text='" + text + '\'' +
                     ", thoughts=" + thoughts +
                     ", docReferences=" + docReferences +
+                    ", usage=" + usage +
                     '}';
         }
     }
@@ -148,7 +163,6 @@ public class CompletionsResponse implements Serializable {
          * action的类型
          * type : response 代表最终结果 - 对应response
          * type : api 代表调用api - 对应action, actionInput, observation
-         *
          */
         @JSONField(name = "ActionType")
         private String actionType;
@@ -256,14 +270,14 @@ public class CompletionsResponse implements Serializable {
         @Override
         public String toString() {
             return "Thought{" + "thought='" + thought + '\'' +
-                   ", actionType='" + actionType + '\'' +
-                   ", response='" + response + '\'' +
-                   ", actionName='" + actionName + '\'' +
-                   ", action='" + action + '\'' +
-                   ", actionInputStream='" + actionInputStream + '\'' +
-                   ", actionInput=" + actionInput +
-                   ", observation='" + observation + '\'' +
-                   '}';
+                    ", actionType='" + actionType + '\'' +
+                    ", response='" + response + '\'' +
+                    ", actionName='" + actionName + '\'' +
+                    ", action='" + action + '\'' +
+                    ", actionInputStream='" + actionInputStream + '\'' +
+                    ", actionInput=" + actionInput +
+                    ", observation='" + observation + '\'' +
+                    '}';
         }
     }
 
@@ -382,11 +396,11 @@ public class CompletionsResponse implements Serializable {
         }
     }
 
-    public boolean isSuccess() {
+    public Boolean isSuccess() {
         return success;
     }
 
-    public void setSuccess(boolean success) {
+    public void setSuccess(Boolean success) {
         this.success = success;
     }
 
@@ -422,13 +436,83 @@ public class CompletionsResponse implements Serializable {
         this.data = data;
     }
 
+
     @Override
     public String toString() {
         return "CompletionsResponse{" + "success=" + success +
-               ", code='" + code + '\'' +
-               ", message='" + message + '\'' +
-               ", requestId='" + requestId + '\'' +
-               ", data=" + data +
-               '}';
+                ", code='" + code + '\'' +
+                ", message='" + message + '\'' +
+                ", requestId='" + requestId + '\'' +
+                ", data=" + data +
+                '}';
+    }
+
+    public static class Usage implements Serializable {
+        private static final long serialVersionUID = 1169681422970782335L;
+
+        /**
+         * input消耗的token
+         */
+        @JSONField(name = "InputTokens")
+        private Integer inputTokens;
+
+        /**
+         * output消耗的token
+         */
+        @JSONField(name = "OutputTokens")
+        private Integer outputTokens;
+
+        /**
+         * 模型id
+         */
+        @JSONField(name = "ModelId")
+        private String modelId;
+
+        /**
+         * 本次模型响应的id
+         */
+        @JSONField(name = "ModelResponseId")
+        private String modelResponseId;
+
+        public Integer getInputTokens() {
+            return inputTokens;
+        }
+
+        public void setInputTokens(Integer inputTokens) {
+            this.inputTokens = inputTokens;
+        }
+
+        public Integer getOutputTokens() {
+            return outputTokens;
+        }
+
+        public void setOutputTokens(Integer outputTokens) {
+            this.outputTokens = outputTokens;
+        }
+
+        public String getModelId() {
+            return modelId;
+        }
+
+        public void setModelId(String modelId) {
+            this.modelId = modelId;
+        }
+
+        public String getModelResponseId() {
+            return modelResponseId;
+        }
+
+        public void setModelResponseId(String modelResponseId) {
+            this.modelResponseId = modelResponseId;
+        }
+
+        @Override
+        public String toString() {
+            return "Usage{" + "inputTokens=" + inputTokens +
+                    ", outputTokens=" + outputTokens +
+                    ", modelId='" + modelId + '\'' +
+                    ", modelResponseId='" + modelResponseId + '\'' +
+                    '}';
+        }
     }
 }
