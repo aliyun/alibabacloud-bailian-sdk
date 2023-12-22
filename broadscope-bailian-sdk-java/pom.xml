@@ -6,7 +6,7 @@
 
     <groupId>com.aliyun</groupId>
     <artifactId>broadscope-bailian-sdk-java</artifactId>
-    <version>1.1.8</version>
+    <version>1.1.9</version>
     <packaging>jar</packaging>
     <name>Alibaba Cloud SFM SDK for Java</name>
     <url>http://www.aliyun.com</url>
@@ -52,6 +52,11 @@
             <groupId>com.alibaba</groupId>
             <artifactId>fastjson</artifactId>
             <version>2.0.27</version>
+        </dependency>
+        <dependency>
+            <groupId>io.projectreactor</groupId>
+            <artifactId>reactor-core</artifactId>
+            <version>3.4.34</version>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

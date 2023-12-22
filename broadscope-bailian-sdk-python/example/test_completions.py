@@ -30,7 +30,10 @@ class CompletionTest(unittest.TestCase):
                 resp.get("RequestId"), resp.get("Code"), resp.get("Message")))
             return
 
-        print("request_id: %s, text: %s" % (resp.get("RequestId"), resp.get("Data", '').get("Text")))
+        print("request_id: %s, text: %s" % (resp.get("RequestId"), resp.get("Data", "").get("Text")))
+        if resp.get("Data", "").get("Usage") is not None and len(resp.get("Data", "").get("Usage")) > 0:
+            usage = resp.get("Data", "").get("Usage")[0]
+            print("input tokens: %d, output tokens: %d" % (usage.get("InputTokens"), usage.get("OutputTokens")))
 
     def test_stream_completions(self):
         access_key_id = os.environ.get("ACCESS_KEY_ID")
@@ -100,26 +103,33 @@ class CompletionTest(unittest.TestCase):
             app_id=app_id, prompt=prompt,
             # 设置模型参数topP的值
             top_p=0.2,
-            # 设置历史上下文, 由调用侧维护历史上下文, 如果同时传入sessionId和history, 优先使用调用者管理的对话上下文
+            # 设置历史上下文, 由调用侧维护历史上下文
             session_id=session_id,
             # 设置历史上下文, 由调用侧维护历史上下文, 如果同时传入sessionId和history, 优先使用调用者管理的对话上下文
             history=chat_history,
-            # 设置模型参数topK，seed
+            # 设置模型参数topK
             top_k=50,
+            # 设置模型参数seed
             seed=2222,
+            # 设置模型参数temperature
+            temperature=0.3,
+            # 设置模型参数max tokens
+            max_tokens=20,
+            # 是否使用原始prompt
             use_raw_prompt=True,
             # 设置文档标签tagId，设置后，文档检索召回时，仅从tagIds对应的文档范围进行召回
             doc_tag_ids=[101, 102],
             # 返回文档检索的文档引用数据, 传入为simple或indexed
             doc_reference_type="simple",
             # 自然语言转sql调用示例
-            biz_params=json.loads(sql_schema))
+            biz_params=json.loads(sql_schema),
+        )
 
         if not resp.get("Success"):
             print("failed to create completion, request_id: %s, code: %s, message: %s" %
                   (resp.get("RequestId"), resp.get("Code"), resp.get("Message")))
         else:
-            print("request_id: %s, text: %s" %(resp.get("RequestId"), resp.get("Data", "").get("Text")))
+            print("request_id: %s, text: %s" % (resp.get("RequestId"), resp.get("Data", "").get("Text")))
 
     def test_create_embeddings(self):
         access_key_id = os.environ.get("ACCESS_KEY_ID")

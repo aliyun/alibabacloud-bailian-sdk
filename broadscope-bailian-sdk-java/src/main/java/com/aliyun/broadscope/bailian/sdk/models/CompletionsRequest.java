@@ -52,14 +52,13 @@ public class CompletionsRequest implements Serializable {
      * 值越大表示准确性越高，随机性越差
      */
     @JSONField(name = "TopP")
-    private double topP;
-
+    private Double topP;
 
     /**
      * 是否流式输出
      */
     @JSONField(name = "Stream")
-    private boolean stream;
+    private Boolean stream;
 
     /**
      * 调用api插件的业务透传参数
@@ -71,7 +70,7 @@ public class CompletionsRequest implements Serializable {
      * 是否包含大模型thoughts结果
      */
     @JSONField(name = "HasThoughts")
-    private boolean hasThoughts;
+    private Boolean hasThoughts;
 
     /**
      * 多轮对话历史
@@ -132,11 +131,11 @@ public class CompletionsRequest implements Serializable {
         return this;
     }
 
-    public double getTopP() {
+    public Double getTopP() {
         return topP;
     }
 
-    public CompletionsRequest setTopP(double topP) {
+    public CompletionsRequest setTopP(Double topP) {
         this.topP = topP;
         return this;
     }
@@ -145,7 +144,7 @@ public class CompletionsRequest implements Serializable {
         return stream;
     }
 
-    public CompletionsRequest setStream(boolean stream) {
+    public CompletionsRequest setStream(Boolean stream) {
         this.stream = stream;
         return this;
     }
@@ -159,11 +158,11 @@ public class CompletionsRequest implements Serializable {
         return this;
     }
 
-    public boolean isHasThoughts() {
+    public Boolean isHasThoughts() {
         return hasThoughts;
     }
 
-    public CompletionsRequest setHasThoughts(boolean hasThoughts) {
+    public CompletionsRequest setHasThoughts(Boolean hasThoughts) {
         this.hasThoughts = hasThoughts;
         return this;
     }
@@ -289,6 +288,22 @@ public class CompletionsRequest implements Serializable {
         @JSONField(name = "UseRawPrompt")
         private Boolean useRawPrompt;
 
+        /**
+         * 采样温度
+         * 采样温度在0到2之间。较高的值(如0.8)将使输出更加随机，而较低的值(如0.2)将使输出更加集中和确定。
+         * 我们通常建议修改temperature或top_p，但不建议两者都修改。
+         */
+        @JSONField(name = "Temperature")
+        private Double temperature;
+
+        /**
+         * 模型生成内容的最大长度
+         * 生成的token的最大数量。输入token数量和生成token数量的总长度受模型上下文长度的限制。
+         */
+        @JSONField(name = "MaxTokens")
+        private Integer maxTokens;
+
+
         public Integer getTopK() {
             return topK;
         }
@@ -316,11 +331,35 @@ public class CompletionsRequest implements Serializable {
             return this;
         }
 
+        public Boolean getUseRawPrompt() {
+            return useRawPrompt;
+        }
+
+        public Double getTemperature() {
+            return temperature;
+        }
+
+        public Parameter setTemperature(Double temperature) {
+            this.temperature = temperature;
+            return this;
+        }
+
+        public Integer getMaxTokens() {
+            return maxTokens;
+        }
+
+        public Parameter setMaxTokens(Integer maxTokens) {
+            this.maxTokens = maxTokens;
+            return this;
+        }
+
         @Override
         public String toString() {
             return "Parameter{" + "topK=" + topK +
                     ", seed=" + seed +
                     ", useRawPrompt=" + useRawPrompt +
+                    ", temperature=" + temperature +
+                    ", maxTokens=" + maxTokens +
                     '}';
         }
     }

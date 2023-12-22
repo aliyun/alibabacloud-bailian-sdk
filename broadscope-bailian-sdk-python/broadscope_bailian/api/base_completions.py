@@ -63,7 +63,8 @@ class BaseCompletions:
                 seed: int = None,
                 use_raw_prompt: bool = None,
                 doc_tag_ids: List[int] = None,
-                timeout: Union[float, Tuple[float, float]] = None):
+                timeout: Union[float, Tuple[float, float]] = None,
+                **kwargs: Any):
 
         self.validate(app_id=app_id, prompt=prompt)
 
@@ -91,6 +92,10 @@ class BaseCompletions:
             parameters["Seed"] = seed
         if use_raw_prompt is not None:
             parameters["UseRawPrompt"] = use_raw_prompt
+        if kwargs.get("temperature") is not None:
+            parameters["Temperature"] = kwargs.get("temperature")
+        if kwargs.get("max_tokens") is not None:
+            parameters["MaxTokens"] = kwargs.get("max_tokens")
 
         data = {
             "RequestId": request_id,

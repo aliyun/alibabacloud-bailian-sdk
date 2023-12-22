@@ -6,6 +6,7 @@
 package com.aliyun.broadscope.bailian.sdk;
 
 import com.alibaba.fastjson.JSON;
+import com.aliyun.broadscope.bailian.sdk.consts.ConfigConsts;
 import com.aliyun.broadscope.bailian.sdk.consts.HttpHeaderConsts;
 import com.aliyun.broadscope.bailian.sdk.models.BaiLianConfig;
 import com.aliyun.broadscope.bailian.sdk.models.CompletionsRequest;
@@ -18,6 +19,8 @@ import okhttp3.sse.EventSourceListener;
 import okhttp3.sse.EventSources;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Sinks;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -33,26 +36,84 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class ApplicationClient {
-    private final OkHttpClient okHttpClient;
+    private final String token;
 
-    private final BaiLianConfig config;
+    private String endpoint;
 
     private ConnectOptions connectOptions;
 
+    private final OkHttpClient okHttpClient;
+
+
     /**
      * 构造实例对象
+     *
      * @param config 配置信息
      */
+    @Deprecated
     public ApplicationClient(BaiLianConfig config) {
-        checkConfig(config);
-        this.config = config;
+        if (config == null) {
+            throw new BaiLianSdkException("config can not be null");
+        }
+
+        this.token = config.getApiKey();
+        this.endpoint = config.getEndpoint();
+        checkConfig();
+
         this.okHttpClient = buildOkHttpClient();
     }
 
+    @Deprecated
     public ApplicationClient(BaiLianConfig config, ConnectOptions connectOptions) {
-        checkConfig(config);
-        this.config = config;
+        if (config == null) {
+            throw new BaiLianSdkException("config can not be null");
+        }
+
+        this.token = config.getApiKey();
+        this.endpoint = config.getEndpoint();
+        checkConfig();
+
         this.connectOptions = connectOptions;
+        this.okHttpClient = buildOkHttpClient();
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
+
+    public static class Builder {
+        private String token;
+
+        private String endpoint;
+
+        private ConnectOptions connectOptions;
+
+        public Builder token(String token) {
+            this.token = token;
+            return this;
+        }
+
+        public Builder endpoint(String endpoint) {
+            this.endpoint = endpoint;
+            return this;
+        }
+
+        public Builder connectOptions(ConnectOptions connectOptions) {
+            this.connectOptions = connectOptions;
+            return this;
+        }
+
+        public ApplicationClient build() {
+            return new ApplicationClient(this);
+        }
+    }
+
+    private ApplicationClient(Builder builder) {
+        token = builder.token;
+        endpoint = builder.endpoint;
+        checkConfig();
+
+        connectOptions = builder.connectOptions;
         this.okHttpClient = buildOkHttpClient();
     }
 
@@ -88,6 +149,7 @@ public class ApplicationClient {
 
     /**
      * 非流式文本生成
+     *
      * @param chatClientRequest prompt请求信息
      * @return 文本生成响应结果
      */
@@ -99,7 +161,7 @@ public class ApplicationClient {
         Headers headers = new Headers.Builder()
                 .add(HttpHeaderConsts.Keys.CONTENT_TYPE, HttpHeaderConsts.MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .add(HttpHeaderConsts.Keys.ACCEPT, HttpHeaderConsts.MediaType.APPLICATION_JSON_VALUE)
-                .add(HttpHeaderConsts.Keys.AUTHORIZATION, "Bearer " + this.config.getApiKey())
+                .add(HttpHeaderConsts.Keys.AUTHORIZATION, "Bearer " + this.token)
                 .build();
 
         chatClientRequest.setStream(false);
@@ -109,7 +171,7 @@ public class ApplicationClient {
         RequestBody requestBody = RequestBody.create(mediaType, data);
 
         Request request = new Request.Builder()
-                .url(this.config.getEndpoint() + "/v2/app/completions")
+                .url(this.getEndpoint() + "/v2/app/completions")
                 .headers(headers)
                 .post(requestBody)
                 .build();
@@ -147,7 +209,8 @@ public class ApplicationClient {
 
     /**
      * completions stream
-     * @param chatClientRequest prompt请求
+     *
+     * @param chatClientRequest   prompt请求
      * @param streamEventListener 流式响应监听器
      */
     public void streamCompletions(CompletionsRequest chatClientRequest, StreamEventListener streamEventListener) {
@@ -158,7 +221,7 @@ public class ApplicationClient {
         Headers headers = new Headers.Builder()
                 .add(HttpHeaderConsts.Keys.CONTENT_TYPE, HttpHeaderConsts.MediaType.APPLICATION_JSON_UTF8_VALUE)
                 .add(HttpHeaderConsts.Keys.ACCEPT, HttpHeaderConsts.MediaType.TEXT_EVENT_STREAM_VALUE)
-                .add(HttpHeaderConsts.Keys.AUTHORIZATION, "Bearer " + this.config.getApiKey())
+                .add(HttpHeaderConsts.Keys.AUTHORIZATION, "Bearer " + this.token)
                 .build();
 
         chatClientRequest.setStream(true);
@@ -170,7 +233,7 @@ public class ApplicationClient {
         try {
             EventSource.Factory factory = EventSources.createFactory(this.okHttpClient);
             Request request = new Request.Builder()
-                    .url(this.config.getEndpoint() + "/v2/app/completions")
+                    .url(this.getEndpoint() + "/v2/app/completions")
                     .headers(headers)
                     .post(requestBody)
                     .build();
@@ -180,19 +243,69 @@ public class ApplicationClient {
         }
     }
 
-    private void checkConfig(BaiLianConfig config) {
-        if (config == null) {
-            throw new BaiLianSdkException("config can not be null");
-        }
+    /**
+     * completions stream
+     *
+     * @param chatClientRequest prompt请求
+     */
+    public Flux<CompletionsResponse> streamCompletions(CompletionsRequest chatClientRequest) {
+        Sinks.Many<CompletionsResponse> sink = Sinks.many().unicast().onBackpressureBuffer();
+        streamCompletions(chatClientRequest, new StreamEventListener() {
+            @Override
+            public void onEvent(CompletionsResponse response) {
 
-        String apiKey = StringUtils.trim(config.getApiKey());
-        if (StringUtils.isEmpty(apiKey)) {
+            }
+
+            @Override
+            public void onEvent(EventSource eventSource, String id, String type, String data) {
+                try {
+                    CompletionsResponse response = JSON.parseObject(data, CompletionsResponse.class);
+                    sink.tryEmitNext(response);
+                } catch (Exception e) {
+                    sink.tryEmitError(e);
+                }
+            }
+
+            @Override
+            public void onFailure(EventSource eventSource, Throwable t, Response response) {
+                try {
+                    if (t == null && response != null) {
+                        String body = response.body() == null ? "" : response.body().string();
+                        String message = String.format("code=%d, message=%s", response.code(), body);
+                        t = new BaiLianSdkException(message);
+                    }
+
+                    if (t != null) {
+                        sink.tryEmitError(t);
+                    }
+                } catch (IOException e) {
+                    sink.tryEmitError(e);
+                } finally {
+                    eventSource.cancel();
+                }
+            }
+
+            @Override
+            public void onOpen(EventSource eventSource, Response response) {
+            }
+
+            @Override
+            public void onClosed(EventSource eventSource) {
+                try {
+                    sink.tryEmitComplete();
+                } finally {
+                    eventSource.cancel();
+                }
+            }
+        });
+
+        return sink.asFlux();
+    }
+
+    private void checkConfig() {
+        String token = StringUtils.trim(this.token);
+        if (StringUtils.isEmpty(token)) {
             throw new BaiLianSdkException("api key is required");
-        }
-
-        String endpoint = StringUtils.trim(config.getEndpoint());
-        if (StringUtils.isEmpty(endpoint)) {
-            throw new BaiLianSdkException("endpoint is required");
         }
     }
 
@@ -271,7 +384,7 @@ public class ApplicationClient {
         /**
          * event失败消息回调函数
          *
-         * @param t 错误消息栈
+         * @param t    错误消息栈
          * @param code 错误代码
          * @param body 错误内容
          */
@@ -286,5 +399,12 @@ public class ApplicationClient {
         public void onClosed() {
 
         }
+    }
+
+    public String getEndpoint() {
+        if (StringUtils.isBlank(endpoint)) {
+            endpoint = ConfigConsts.ENDPOINT;
+        }
+        return endpoint;
     }
 }

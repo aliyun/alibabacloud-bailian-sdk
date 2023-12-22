@@ -1,5 +1,5 @@
 import json
-from typing import Dict, Optional, Iterator, List, Union, Tuple
+from typing import Dict, Optional, Iterator, List, Union, Tuple, Any
 
 from broadscope_bailian.api import BaseCompletions
 from broadscope_bailian.api.models import ChatQaMessage
@@ -22,7 +22,8 @@ class Completions(BaseCompletions):
              seed: int = None,
              use_raw_prompt: bool = None,
              doc_tag_ids: List[int] = None,
-             timeout: Union[float, Tuple[float, float]] = None):
+             timeout: Union[float, Tuple[float, float]] = None,
+             **kwargs: Any):
         resp = self.reqeust(app_id=app_id,
                             prompt=prompt,
                             request_id=request_id,
@@ -37,7 +38,8 @@ class Completions(BaseCompletions):
                             seed=seed,
                             use_raw_prompt=use_raw_prompt,
                             doc_tag_ids=doc_tag_ids,
-                            timeout=timeout)
+                            timeout=timeout,
+                            **kwargs)
 
         if stream:
             return (json.loads(line) for line in self.parse_response_stream(resp.iter_lines()))
