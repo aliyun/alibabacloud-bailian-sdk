@@ -123,6 +123,8 @@ class CompletionTest(unittest.TestCase):
             doc_reference_type="simple",
             # 自然语言转sql调用示例
             biz_params=json.loads(sql_schema),
+            # 超时设置, 单位秒
+            timeout=30,
         )
 
         if not resp.get("Success"):
