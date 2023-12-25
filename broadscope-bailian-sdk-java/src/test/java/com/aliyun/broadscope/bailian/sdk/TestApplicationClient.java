@@ -13,7 +13,6 @@ import com.aliyun.bailian20230601.models.CreateTextEmbeddingsResponseBody;
 import com.aliyun.broadscope.bailian.sdk.consts.ConfigConsts;
 import com.aliyun.broadscope.bailian.sdk.consts.DocReferenceTypeEnum;
 import com.aliyun.broadscope.bailian.sdk.consts.EmbeddingTextTypeEnum;
-import com.aliyun.broadscope.bailian.sdk.models.BaiLianConfig;
 import com.aliyun.broadscope.bailian.sdk.models.CompletionsRequest;
 import com.aliyun.broadscope.bailian.sdk.models.CompletionsResponse;
 import com.aliyun.broadscope.bailian.sdk.models.ConnectOptions;
