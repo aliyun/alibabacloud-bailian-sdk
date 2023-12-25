@@ -462,18 +462,6 @@ public class CompletionsResponse implements Serializable {
         @JSONField(name = "OutputTokens")
         private Integer outputTokens;
 
-        /**
-         * 模型id
-         */
-        @JSONField(name = "ModelId")
-        private String modelId;
-
-        /**
-         * 本次模型响应的id
-         */
-        @JSONField(name = "ModelResponseId")
-        private String modelResponseId;
-
         public Integer getInputTokens() {
             return inputTokens;
         }
@@ -490,28 +478,10 @@ public class CompletionsResponse implements Serializable {
             this.outputTokens = outputTokens;
         }
 
-        public String getModelId() {
-            return modelId;
-        }
-
-        public void setModelId(String modelId) {
-            this.modelId = modelId;
-        }
-
-        public String getModelResponseId() {
-            return modelResponseId;
-        }
-
-        public void setModelResponseId(String modelResponseId) {
-            this.modelResponseId = modelResponseId;
-        }
-
         @Override
         public String toString() {
             return "Usage{" + "inputTokens=" + inputTokens +
                     ", outputTokens=" + outputTokens +
-                    ", modelId='" + modelId + '\'' +
-                    ", modelResponseId='" + modelResponseId + '\'' +
                     '}';
         }
     }
