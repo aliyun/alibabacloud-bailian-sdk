@@ -231,7 +231,7 @@ public class TestApplicationClient {
             CreateTextEmbeddingsRequest request = new CreateTextEmbeddingsRequest()
                     .setAgentKey(agentKey)
                     .setInput(input)
-                    .setTextType(EmbeddingTextTypeEnum.QUERY.getType());
+                    .setTextType(EmbeddingTextTypeEnum.DOCUMENT.getType());
 
             CreateTextEmbeddingsResponse response = client.createTextEmbeddings(request);
             CreateTextEmbeddingsResponseBody body = response.getBody();
