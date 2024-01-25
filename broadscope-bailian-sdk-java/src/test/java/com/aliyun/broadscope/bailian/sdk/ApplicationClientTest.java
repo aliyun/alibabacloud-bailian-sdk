@@ -67,7 +67,7 @@ public class ApplicationClientTest {
             return;
         }
 
-        System.out.printf("requestId: %s, content: %s, ", response.getRequestId(), response.getData().getChoices().get(0).getMessage().getContent());
+        System.out.printf("requestId: %s, content: %s", response.getRequestId(), response.getData().getChoices().get(0).getMessage().getContent());
     }
 
     /**
