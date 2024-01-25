@@ -3,7 +3,12 @@ import os
 from broadscope_bailian.api import (
     Completions,
     AccessTokenClient,
-    ChatQaMessage
+    ChatQaMessage,
+    ChatRequestQaMessage,
+    ChatSystemMessage,
+    ChatUserMessage,
+    ChatAssistantMessage,
+    deprecated
 )
 
 api_key = os.environ.get("BROADSCOPE_API_KEY")

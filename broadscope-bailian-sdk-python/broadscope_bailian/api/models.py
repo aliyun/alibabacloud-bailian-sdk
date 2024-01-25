@@ -1,4 +1,8 @@
-from typing import Dict
+from typing import Dict, Union
+
+from typing_extensions import TypedDict, Required, Literal
+
+from broadscope_bailian.api.util import deprecated
 
 
 class BaseModel:
@@ -9,6 +13,7 @@ class BaseModel:
         pass
 
 
+@deprecated
 class ChatQaMessage(BaseModel):
     def __init__(self, user, bot):
         self.user = user
@@ -31,3 +36,42 @@ class ChatQaMessage(BaseModel):
             data["Bot"] = self.bot
 
         return data
+
+
+class ChatRequestQaMessage(TypedDict):
+    user: Required[str]
+    """ content of user """
+
+    bot: Required[str]
+    """ content of bot """
+
+
+class ChatSystemMessage(TypedDict):
+    role: Required[Literal["system"]]
+    """ system role """
+
+    content: str
+    """ content of system """
+
+
+class ChatUserMessage(TypedDict):
+    role: Required[Literal["user"]]
+    """ user role """
+
+    content: Required[str]
+    """ content of user """
+
+
+class ChatAssistantMessage(TypedDict):
+    role: Required[Literal["assistant"]]
+    """ user role """
+
+    content: Required[str]
+    """ content of user """
+
+
+ChatRequestMessage = Union[
+    ChatSystemMessage,
+    ChatUserMessage,
+    ChatAssistantMessage
+]
