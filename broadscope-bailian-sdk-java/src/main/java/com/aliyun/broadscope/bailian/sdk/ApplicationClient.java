@@ -320,8 +320,8 @@ public class ApplicationClient {
         }
 
         String prompt = StringUtils.trim(request.getPrompt());
-        if (StringUtils.isEmpty(prompt)) {
-            throw new BaiLianSdkException("input prompt is required");
+        if (StringUtils.isEmpty(prompt) && (request.getMessages() == null || request.getMessages().size() == 0)) {
+            throw new BaiLianSdkException("prompt or messages is required");
         }
     }
 

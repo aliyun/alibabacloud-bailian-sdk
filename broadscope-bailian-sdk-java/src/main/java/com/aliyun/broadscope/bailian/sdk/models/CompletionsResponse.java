@@ -91,6 +91,13 @@ public class CompletionsResponse implements Serializable {
         @JSONField(name = "Usage")
         private List<Usage> usage;
 
+        /**
+         * 多个生成内容
+         */
+        @JSONField(name = "Choices")
+        private List<ChatChoice> choices;
+
+
         public String getResponseId() {
             return responseId;
         }
@@ -139,15 +146,26 @@ public class CompletionsResponse implements Serializable {
             this.usage = usage;
         }
 
+        public List<ChatChoice> getChoices() {
+            return choices;
+        }
+
+        public void setChoices(List<ChatChoice> choices) {
+            this.choices = choices;
+        }
+
         @Override
         public String toString() {
-            return "Data{" + "responseId='" + responseId + '\'' +
-                    ", sessionId='" + sessionId + '\'' +
-                    ", text='" + text + '\'' +
-                    ", thoughts=" + thoughts +
-                    ", docReferences=" + docReferences +
-                    ", usage=" + usage +
-                    '}';
+            final StringBuilder sb = new StringBuilder("Data{");
+            sb.append("responseId='").append(responseId).append('\'');
+            sb.append(", sessionId='").append(sessionId).append('\'');
+            sb.append(", text='").append(text).append('\'');
+            sb.append(", thoughts=").append(thoughts);
+            sb.append(", docReferences=").append(docReferences);
+            sb.append(", usage=").append(usage);
+            sb.append(", choices=").append(choices);
+            sb.append('}');
+            return sb.toString();
         }
     }
 
@@ -462,6 +480,13 @@ public class CompletionsResponse implements Serializable {
         @JSONField(name = "OutputTokens")
         private Integer outputTokens;
 
+        /**
+         * 模型id
+         */
+        @JSONField(name = "ModelId")
+        private String modelId;
+
+
         public Integer getInputTokens() {
             return inputTokens;
         }
@@ -478,10 +503,19 @@ public class CompletionsResponse implements Serializable {
             this.outputTokens = outputTokens;
         }
 
+        public String getModelId() {
+            return modelId;
+        }
+
+        public void setModelId(String modelId) {
+            this.modelId = modelId;
+        }
+
         @Override
         public String toString() {
             return "Usage{" + "inputTokens=" + inputTokens +
                     ", outputTokens=" + outputTokens +
+                    ", modelId='" + modelId + '\'' +
                     '}';
         }
     }

@@ -6,7 +6,8 @@ from typing import Dict, Any, List, Union, Tuple
 import requests
 
 import broadscope_bailian
-from broadscope_bailian.api.models import ChatQaMessage
+from broadscope_bailian.api.models import ChatRequestQaMessage
+from broadscope_bailian.api.models import ChatRequestMessage
 
 _thread_context = threading.local()
 
@@ -39,7 +40,7 @@ class CompletionsRequestError(Exception):
 
 
 class BaseCompletions:
-    """ 调用百联进行文本生成 """
+    """ 调用百炼进行文本生成 """
 
     def __init__(self, token=None, endpoint=None):
         self.token = token
@@ -53,20 +54,26 @@ class BaseCompletions:
                 prompt: str,
                 request_id: str = None,
                 session_id: str = None,
-                history: List[ChatQaMessage] = None,
+                history: List[ChatRequestQaMessage] = None,
+                messages: List[ChatRequestMessage] = None,
                 top_p: float = 0.0,
-                biz_params: Dict = None,
-                has_thoughts: bool = False,
                 stream: bool = False,
-                doc_reference_type: str = None,
                 top_k: int = None,
                 seed: int = None,
                 use_raw_prompt: bool = None,
+                temperature: float = None,
+                max_tokens: int = None,
+                result_format: str = None,
+                stop: List[str] = None,
+                incremental_output: bool = None,
+                doc_reference_type: str = None,
                 doc_tag_ids: List[int] = None,
-                timeout: Union[float, Tuple[float, float]] = None,
-                **kwargs: Any):
+                doc_tag_codes: List[str] = None,
+                biz_params: Dict = None,
+                has_thoughts: bool = False,
+                timeout: Union[float, Tuple[float, float]] = None):
 
-        self.validate(app_id=app_id, prompt=prompt)
+        self.validate(app_id=app_id, prompt=prompt, messages=messages)
 
         headers = dict()
         headers["Content-Type"] = "application/json;charset=UTF-8"
@@ -79,12 +86,6 @@ class BaseCompletions:
             uuid_obj = uuid.uuid4()
             request_id = str(uuid_obj).replace('-', '')
 
-        h = None
-        if history is not None:
-            h = []
-            for v in history:
-                h.append(v.to_dict())
-
         parameters = {}
         if top_k is not None:
             parameters["TopK"] = top_k
@@ -92,15 +93,20 @@ class BaseCompletions:
             parameters["Seed"] = seed
         if use_raw_prompt is not None:
             parameters["UseRawPrompt"] = use_raw_prompt
-        if kwargs.get("temperature") is not None:
-            parameters["Temperature"] = kwargs.get("temperature")
-        if kwargs.get("max_tokens") is not None:
-            parameters["MaxTokens"] = kwargs.get("max_tokens")
+        if temperature is not None:
+            parameters["Temperature"] = temperature
+        if max_tokens is not None:
+            parameters["MaxTokens"] = max_tokens
+        if result_format is not None:
+            parameters["ResultFormat"] = result_format
+        if stop is not None:
+            parameters["Stop"] = stop
+        if incremental_output is not None:
+            parameters["IncrementalOutput"] = incremental_output
 
         data = {
             "RequestId": request_id,
             "SessionId": session_id,
-            "History": h,
             "AppId": app_id,
             "Prompt": prompt,
             "TopP": top_p,
@@ -109,8 +115,23 @@ class BaseCompletions:
             "BizParams": biz_params,
             "DocReferenceType": doc_reference_type,
             "Parameters": parameters,
-            "DocTagIds": doc_tag_ids
+            "DocTagIds": doc_tag_ids,
+            "DocTagCodes": doc_tag_codes,
         }
+
+        if history is not None:
+            new_history = []
+            for v in history:
+                new_history.append({"User": v.get("user"), "Bot": v.get("bot")})
+
+            data["History"] = new_history
+
+        if messages is not None:
+            new_messages = []
+            for m in messages:
+                new_messages.append({"Role": m.get("role"), "Content": m.get("content")})
+
+            data["Messages"] = new_messages
 
         url = "%s%s" % (self.endpoint, "/v2/app/completions")
         session = self.__get_session()
@@ -134,7 +155,7 @@ class BaseCompletions:
         return _thread_context.session
 
     def validate(self, app_id: str,
-                 prompt: str):
+                 prompt: str, messages: List[dict]):
         if self.token is None:
             self.token = broadscope_bailian.api_key
 
@@ -150,5 +171,16 @@ class BaseCompletions:
         if app_id is None or app_id == '':
             raise ValueError("app id is required")
 
-        if prompt is None or prompt == '':
-            raise ValueError("prompt is required")
+        if (prompt is None or prompt == '') and (messages is None or len(messages) == 0):
+            raise ValueError("prompt or message is required")
+
+    @staticmethod
+    def get_param(key, cls_type, **kwargs):
+        val = kwargs.get(key, None)
+        if val is None:
+            return None
+
+        if not isinstance(val, cls_type):
+            raise TypeError("%s is not instance of %s" % (key, cls_type))
+
+        return val

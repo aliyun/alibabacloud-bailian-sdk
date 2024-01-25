@@ -93,132 +93,20 @@ public class CompletionsRequest implements Serializable {
      * 文档标签ID
      */
     @JSONField(name = "DocTagIds")
+    @Deprecated
     private List<Long> docTagIds;
 
-    public String getRequestId() {
-        return requestId;
-    }
+    /**
+     * 文档标签codes
+     */
+    @JSONField(name = "DocTagCodes")
+    private List<String> docTagCodes;
 
-    public CompletionsRequest setRequestId(String requestId) {
-        this.requestId = requestId;
-        return this;
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public CompletionsRequest setSessionId(String sessionId) {
-        this.sessionId = sessionId;
-        return this;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public CompletionsRequest setAppId(String appId) {
-        this.appId = appId;
-        return this;
-    }
-
-    public String getPrompt() {
-        return prompt;
-    }
-
-    public CompletionsRequest setPrompt(String prompt) {
-        this.prompt = prompt;
-        return this;
-    }
-
-    public Double getTopP() {
-        return topP;
-    }
-
-    public CompletionsRequest setTopP(Double topP) {
-        this.topP = topP;
-        return this;
-    }
-
-    public boolean isStream() {
-        return stream;
-    }
-
-    public CompletionsRequest setStream(Boolean stream) {
-        this.stream = stream;
-        return this;
-    }
-
-    public JSONObject getBizParams() {
-        return bizParams;
-    }
-
-    public CompletionsRequest setBizParams(JSONObject bizParams) {
-        this.bizParams = bizParams;
-        return this;
-    }
-
-    public Boolean isHasThoughts() {
-        return hasThoughts;
-    }
-
-    public CompletionsRequest setHasThoughts(Boolean hasThoughts) {
-        this.hasThoughts = hasThoughts;
-        return this;
-    }
-
-    public List<ChatQaPair> getHistory() {
-        return history;
-    }
-
-    public CompletionsRequest setHistory(List<ChatQaPair> history) {
-        this.history = history;
-        return this;
-    }
-
-    public String getDocReferenceType() {
-        return docReferenceType;
-    }
-
-    public CompletionsRequest setDocReferenceType(String docReferenceType) {
-        this.docReferenceType = docReferenceType;
-        return this;
-    }
-
-    public Parameter getParameters() {
-        return parameters;
-    }
-
-    public CompletionsRequest setParameters(Parameter parameters) {
-        this.parameters = parameters;
-        return this;
-    }
-
-    public List<Long> getDocTagIds() {
-        return docTagIds;
-    }
-
-    public CompletionsRequest setDocTagIds(List<Long> docTagIds) {
-        this.docTagIds = docTagIds;
-        return this;
-    }
-
-    @Override
-    public String toString() {
-        return "CompletionsRequest{" + "requestId='" + requestId + '\'' +
-                ", sessionId='" + sessionId + '\'' +
-                ", appId='" + appId + '\'' +
-                ", prompt='" + prompt + '\'' +
-                ", topP=" + topP +
-                ", stream=" + stream +
-                ", bizParams=" + bizParams +
-                ", hasThoughts=" + hasThoughts +
-                ", history=" + history +
-                ", docReferenceType='" + docReferenceType + '\'' +
-                ", parameters=" + parameters +
-                ", docTagIds=" + docTagIds +
-                '}';
-    }
+    /**
+     * 消息列表
+     */
+    @JSONField(name = "Messages")
+    private List<ChatRequestMessage> messages;
 
     public static class ChatQaPair implements Serializable {
         private static final long serialVersionUID = -3051114257693095299L;
@@ -303,6 +191,30 @@ public class CompletionsRequest implements Serializable {
         @JSONField(name = "MaxTokens")
         private Integer maxTokens;
 
+        /**
+         * API将停止生成token，最多支持4个停用词（停用句）。
+         */
+        @JSONField(name = "Stop")
+        private List<String> stop;
+
+
+        /**
+         * true 逐个增量输出非叠加模式
+         * false 增量输出叠加模式
+         */
+        @JSONField(name = "IncrementalOutput")
+        private Boolean incrementalOutput;
+
+        /**
+         * 返回结果类型
+         * [text|message]
+         * 默认为text
+         * 当为message时，输出参考message结果示例。
+         * 推荐优先使用message格式。
+         */
+        @JSONField(name = "ResultFormat")
+        private String resultFormat;
+
 
         public Integer getTopK() {
             return topK;
@@ -353,6 +265,33 @@ public class CompletionsRequest implements Serializable {
             return this;
         }
 
+        public List<String> getStop() {
+            return stop;
+        }
+
+        public Parameter setStop(List<String> stop) {
+            this.stop = stop;
+            return this;
+        }
+
+        public Boolean getIncrementalOutput() {
+            return incrementalOutput;
+        }
+
+        public Parameter setIncrementalOutput(Boolean incrementalOutput) {
+            this.incrementalOutput = incrementalOutput;
+            return this;
+        }
+
+        public String getResultFormat() {
+            return resultFormat;
+        }
+
+        public Parameter setResultFormat(String resultFormat) {
+            this.resultFormat = resultFormat;
+            return this;
+        }
+
         @Override
         public String toString() {
             return "Parameter{" + "topK=" + topK +
@@ -360,7 +299,160 @@ public class CompletionsRequest implements Serializable {
                     ", useRawPrompt=" + useRawPrompt +
                     ", temperature=" + temperature +
                     ", maxTokens=" + maxTokens +
+                    ", stop=" + stop +
+                    ", incrementalOutput=" + incrementalOutput +
+                    ", resultFormat='" + resultFormat + '\'' +
                     '}';
         }
+    }
+
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public CompletionsRequest setRequestId(String requestId) {
+        this.requestId = requestId;
+        return this;
+    }
+
+    public String getSessionId() {
+        return sessionId;
+    }
+
+    public CompletionsRequest setSessionId(String sessionId) {
+        this.sessionId = sessionId;
+        return this;
+    }
+
+    public String getAppId() {
+        return appId;
+    }
+
+    public CompletionsRequest setAppId(String appId) {
+        this.appId = appId;
+        return this;
+    }
+
+    public String getPrompt() {
+        return prompt;
+    }
+
+    public CompletionsRequest setPrompt(String prompt) {
+        this.prompt = prompt;
+        return this;
+    }
+
+    public Double getTopP() {
+        return topP;
+    }
+
+    public CompletionsRequest setTopP(Double topP) {
+        this.topP = topP;
+        return this;
+    }
+
+    public Boolean isStream() {
+        return stream;
+    }
+
+    public CompletionsRequest setStream(Boolean stream) {
+        this.stream = stream;
+        return this;
+    }
+
+    public JSONObject getBizParams() {
+        return bizParams;
+    }
+
+    public CompletionsRequest setBizParams(JSONObject bizParams) {
+        this.bizParams = bizParams;
+        return this;
+    }
+
+    public Boolean isHasThoughts() {
+        return hasThoughts;
+    }
+
+    public CompletionsRequest setHasThoughts(Boolean hasThoughts) {
+        this.hasThoughts = hasThoughts;
+        return this;
+    }
+
+    public List<ChatQaPair> getHistory() {
+        return history;
+    }
+
+    public CompletionsRequest setHistory(List<ChatQaPair> history) {
+        this.history = history;
+        return this;
+    }
+
+    public String getDocReferenceType() {
+        return docReferenceType;
+    }
+
+    public CompletionsRequest setDocReferenceType(String docReferenceType) {
+        this.docReferenceType = docReferenceType;
+        return this;
+    }
+
+    public Parameter getParameters() {
+        return parameters;
+    }
+
+    public CompletionsRequest setParameters(Parameter parameters) {
+        this.parameters = parameters;
+        return this;
+    }
+
+    @Deprecated
+    public List<Long> getDocTagIds() {
+        return docTagIds;
+    }
+
+    @Deprecated
+    public CompletionsRequest setDocTagIds(List<Long> docTagIds) {
+        this.docTagIds = docTagIds;
+        return this;
+    }
+
+    public List<String> getDocTagCodes() {
+        return docTagCodes;
+    }
+
+    public CompletionsRequest setDocTagCodes(List<String> docTagCodes) {
+        this.docTagCodes = docTagCodes;
+        return this;
+    }
+
+    public List<ChatRequestMessage> getMessages() {
+        return messages;
+    }
+
+    public CompletionsRequest setMessages(List<ChatRequestMessage> messages) {
+        this.messages = messages;
+        return this;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CompletionsRequest{");
+        sb.append("requestId='").append(requestId).append('\'');
+        sb.append(", sessionId='").append(sessionId).append('\'');
+        sb.append(", appId='").append(appId).append('\'');
+        sb.append(", prompt='").append(prompt).append('\'');
+        sb.append(", topP=").append(topP);
+        sb.append(", stream=").append(stream);
+        sb.append(", bizParams=").append(bizParams);
+        sb.append(", hasThoughts=").append(hasThoughts);
+        sb.append(", history=").append(history);
+        sb.append(", docReferenceType='").append(docReferenceType).append('\'');
+        sb.append(", parameters=").append(parameters);
+        sb.append(", docTagIds=").append(docTagIds);
+        sb.append(", docTagCodes=").append(docTagCodes);
+        sb.append(", messages=").append(messages);
+        sb.append('}');
+        return sb.toString();
     }
 }
