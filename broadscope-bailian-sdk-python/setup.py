@@ -1,11 +1,11 @@
 from setuptools import setup, find_packages
 
 PACKAGE = "broadscope_bailian"
-VERSION = "1.3.0"
+VERSION = "1.3.1"
 
 requires = [
     "requests >= 2.20",
-    "alibabacloud_bailian20230601 >= 1.1.2"
+    "alibabacloud_bailian20230601 >= 1.1.2",
     "typing-extensions>=4.7.0, <5"
 ]
 

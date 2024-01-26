@@ -221,7 +221,7 @@ class CompletionTest(unittest.TestCase):
             print("request_id: %s, text: %s" % (resp.get("RequestId"), resp.get("Data", {}).get("Text")))
 
     def test_nl2sql_completions(self):
-        """ 智能问数应用示例 """
+        """ Nl2SQL应用示例 """
 
         access_key_id = os.environ.get("ACCESS_KEY_ID")
         access_key_secret = os.environ.get("ACCESS_KEY_SECRET")
