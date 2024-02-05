@@ -8,7 +8,6 @@ package com.aliyun.broadscope.bailian.sdk;
 import com.alibaba.fastjson.JSON;
 import com.aliyun.broadscope.bailian.sdk.consts.DocReferenceTypeEnum;
 import com.aliyun.broadscope.bailian.sdk.models.*;
-import com.aliyun.broadscope.bailian.sdk.*;
 import com.aliyun.broadscope.bailian.sdk.utils.UUIDGenerator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.Test;
@@ -32,7 +31,6 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class ApplicationClientTest {
-
     /**
      * 官方模型调用应用、自训练模型应用示例
      */
@@ -67,7 +65,7 @@ public class ApplicationClientTest {
             return;
         }
 
-        System.out.printf("requestId: %s, content: %s", response.getRequestId(), response.getData().getChoices().get(0).getMessage().getContent());
+        System.out.printf("requestId: %s, content: %s, ", response.getRequestId(), response.getData().getChoices().get(0).getMessage().getContent());
     }
 
     /**
