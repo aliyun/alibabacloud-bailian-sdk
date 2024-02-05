@@ -215,6 +215,11 @@ public class CompletionsRequest implements Serializable {
         @JSONField(name = "ResultFormat")
         private String resultFormat;
 
+        /**
+         * 是否启用搜索
+         */
+        @JSONField(name = "EnableSearch")
+        private Boolean enableSearch;
 
         public Integer getTopK() {
             return topK;
@@ -292,17 +297,29 @@ public class CompletionsRequest implements Serializable {
             return this;
         }
 
+        public Boolean getEnableSearch() {
+            return enableSearch;
+        }
+
+        public Parameter setEnableSearch(Boolean enableSearch) {
+            this.enableSearch = enableSearch;
+            return this;
+        }
+
         @Override
         public String toString() {
-            return "Parameter{" + "topK=" + topK +
-                    ", seed=" + seed +
-                    ", useRawPrompt=" + useRawPrompt +
-                    ", temperature=" + temperature +
-                    ", maxTokens=" + maxTokens +
-                    ", stop=" + stop +
-                    ", incrementalOutput=" + incrementalOutput +
-                    ", resultFormat='" + resultFormat + '\'' +
-                    '}';
+            final StringBuilder sb = new StringBuilder("Parameter{");
+            sb.append("topK=").append(topK);
+            sb.append(", seed=").append(seed);
+            sb.append(", useRawPrompt=").append(useRawPrompt);
+            sb.append(", temperature=").append(temperature);
+            sb.append(", maxTokens=").append(maxTokens);
+            sb.append(", stop=").append(stop);
+            sb.append(", incrementalOutput=").append(incrementalOutput);
+            sb.append(", resultFormat='").append(resultFormat).append('\'');
+            sb.append(", enableSearch=").append(enableSearch);
+            sb.append('}');
+            return sb.toString();
         }
     }
 
