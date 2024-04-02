@@ -207,7 +207,7 @@ public class ApplicationClient {
                 .post(requestBody)
                 .build();
 
-        logger.info("new request, request id: {}", chatClientRequest.getRequestId());
+        logger.debug("new request, request id: {}", chatClientRequest.getRequestId());
         String result;
         try (Response response = okHttpClient.newCall(request).execute()) {
             ResponseBody responseBody = response.body();
@@ -265,17 +265,17 @@ public class ApplicationClient {
         try {
             EventSource.Factory factory = EventSources.createFactory(this.okHttpClient);
 
-            logger.info("build event request, request id: {}", chatClientRequest.getRequestId());
+            logger.debug("build event request, request id: {}", chatClientRequest.getRequestId());
             Request request = new Request.Builder()
                     .url(this.getEndpoint() + "/v2/app/completions")
                     .headers(headers)
                     .post(requestBody)
                     .build();
 
-            logger.info("new event source, request id: {}", chatClientRequest.getRequestId());
+            logger.debug("new event source, request id: {}", chatClientRequest.getRequestId());
             factory.newEventSource(request, streamEventListener);
 
-            logger.info("after new event source, request id: {}", chatClientRequest.getRequestId());
+            logger.debug("after new event source, request id: {}", chatClientRequest.getRequestId());
         } catch (Exception e) {
             throw new BaiLianSdkException(e);
         }
