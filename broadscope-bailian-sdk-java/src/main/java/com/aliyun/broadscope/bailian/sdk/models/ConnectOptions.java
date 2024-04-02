@@ -22,6 +22,8 @@ public class ConnectOptions {
 
     private long readTimeout;
 
+    private int connectPoolSize;
+
     public ConnectOptions() {
     }
 
@@ -29,6 +31,13 @@ public class ConnectOptions {
         this.connectTimeout = connectTimeout;
         this.writeTimeout = writeTimeout;
         this.readTimeout = readTimeout;
+    }
+
+    public ConnectOptions(long connectTimeout, long writeTimeout, long readTimeout, int connectPoolSize) {
+        this.connectTimeout = connectTimeout;
+        this.writeTimeout = writeTimeout;
+        this.readTimeout = readTimeout;
+        this.connectPoolSize = connectPoolSize;
     }
 
     public long getConnectTimeout() {
@@ -55,11 +64,22 @@ public class ConnectOptions {
         this.readTimeout = readTimeout;
     }
 
+    public int getConnectPoolSize() {
+        return connectPoolSize;
+    }
+
+    public void setConnectPoolSize(int connectPoolSize) {
+        this.connectPoolSize = connectPoolSize;
+    }
+
     @Override
     public String toString() {
-        return "ConnectOptions{" + "connectTimeout=" + connectTimeout +
-               ", writeTimeout=" + writeTimeout +
-               ", readTimeout=" + readTimeout +
-               '}';
+        final StringBuilder sb = new StringBuilder("ConnectOptions{");
+        sb.append("connectTimeout=").append(connectTimeout);
+        sb.append(", writeTimeout=").append(writeTimeout);
+        sb.append(", readTimeout=").append(readTimeout);
+        sb.append(", connectPoolSize=").append(connectPoolSize);
+        sb.append('}');
+        return sb.toString();
     }
 }

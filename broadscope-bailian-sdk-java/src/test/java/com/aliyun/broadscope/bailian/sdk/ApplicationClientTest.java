@@ -8,6 +8,7 @@ package com.aliyun.broadscope.bailian.sdk;
 import com.alibaba.fastjson.JSON;
 import com.aliyun.broadscope.bailian.sdk.consts.DocReferenceTypeEnum;
 import com.aliyun.broadscope.bailian.sdk.models.*;
+import com.aliyun.broadscope.bailian.sdk.*;
 import com.aliyun.broadscope.bailian.sdk.utils.UUIDGenerator;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.Test;
@@ -44,8 +45,13 @@ public class ApplicationClientTest {
 
         AccessTokenClient accessTokenClient = new AccessTokenClient(accessKeyId, accessKeySecret, agentKey);
         String token = accessTokenClient.getToken();
+
+        ConnectOptions connectOptions = new ConnectOptions();
+        connectOptions.setConnectPoolSize(20);
+
         ApplicationClient client = ApplicationClient.builder()
                 .token(token)
+                .connectOptions(connectOptions)
                 .build();
 
         List<ChatRequestMessage> messages = new ArrayList<>();
@@ -113,7 +119,8 @@ public class ApplicationClientTest {
                         //设置停止词
                         .setStop(Collections.singletonList("景点"))
                         //设置内容返回结构为message
-                        .setResultFormat("message"));
+                        .setResultFormat("message")
+                        .setEnableSearch(true));
 
         CompletionsResponse response = client.completions(request);
         if (!response.isSuccess()) {
@@ -142,8 +149,12 @@ public class ApplicationClientTest {
 
         AccessTokenClient accessTokenClient = new AccessTokenClient(accessKeyId, accessKeySecret, agentKey);
         String token = accessTokenClient.getToken();
+
+        ConnectOptions connectOptions = new ConnectOptions();
+        connectOptions.setConnectPoolSize(20);
         ApplicationClient client = ApplicationClient.builder()
                 .token(token)
+                .connectOptions(connectOptions)
                 .build();
 
         List<ChatRequestMessage> messages = new ArrayList<>();
