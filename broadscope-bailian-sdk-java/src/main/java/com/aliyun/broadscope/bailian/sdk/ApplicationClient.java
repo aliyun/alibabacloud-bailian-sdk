@@ -14,15 +14,19 @@ import com.aliyun.broadscope.bailian.sdk.models.CompletionsResponse;
 import com.aliyun.broadscope.bailian.sdk.models.ConnectOptions;
 import com.aliyun.broadscope.bailian.sdk.utils.UUIDGenerator;
 import okhttp3.*;
+import okhttp3.logging.HttpLoggingInterceptor;
 import okhttp3.sse.EventSource;
 import okhttp3.sse.EventSourceListener;
 import okhttp3.sse.EventSources;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Sinks;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -36,6 +40,12 @@ import java.util.concurrent.TimeUnit;
  */
 
 public class ApplicationClient {
+    private static final Logger logger = LoggerFactory.getLogger(ApplicationClient.class);
+
+    private static final Integer DEFAULT_CONNECTION_POOL_SIZE = 5;
+
+    private static final Duration DEFAULT_CONNECTION_IDLE_TIMEOUT = Duration.ofSeconds(600);
+
     private final String token;
 
     private String endpoint;
@@ -43,6 +53,7 @@ public class ApplicationClient {
     private ConnectOptions connectOptions;
 
     private final OkHttpClient okHttpClient;
+
 
 
     /**
@@ -124,27 +135,47 @@ public class ApplicationClient {
         long connectTimeout = 30000;
         long writeTimeout = 30000;
         long readTimeout = 600000;
+        Integer connectionPoolSize = DEFAULT_CONNECTION_POOL_SIZE;
 
         if (connectOptions != null) {
-            if (connectOptions.getConnectTimeout() >= 0) {
+            if (connectOptions.getConnectTimeout() > 0) {
                 connectTimeout = connectOptions.getConnectTimeout();
             }
 
-            if (connectOptions.getWriteTimeout() >= 0) {
+            if (connectOptions.getWriteTimeout() > 0) {
                 writeTimeout = connectOptions.getWriteTimeout();
             }
 
-            if (connectOptions.getReadTimeout() >= 0) {
+            if (connectOptions.getReadTimeout() > 0) {
                 readTimeout = connectOptions.getReadTimeout();
+            }
+
+            if (connectOptions.getConnectPoolSize() > 0) {
+                connectionPoolSize = connectOptions.getConnectPoolSize();
             }
         }
 
-        return new OkHttpClient
-                .Builder()
-                .connectTimeout(connectTimeout, TimeUnit.MILLISECONDS)
-                .writeTimeout(writeTimeout, TimeUnit.MILLISECONDS)
-                .readTimeout(readTimeout, TimeUnit.MILLISECONDS)
-                .build();
+        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
+        logging.setLevel(HttpLoggingInterceptor.Level.BASIC);
+
+        Dispatcher dispatcher = new Dispatcher();
+        if (dispatcher.getMaxRequests() < connectionPoolSize) {
+            dispatcher.setMaxRequests(connectionPoolSize);
+            dispatcher.setMaxRequestsPerHost(connectionPoolSize);
+        }
+
+        OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
+        clientBuilder.connectTimeout(Duration.ofMillis(connectTimeout))
+                .readTimeout(Duration.ofMillis(readTimeout))
+                .writeTimeout(Duration.ofMillis(writeTimeout))
+                .addInterceptor(logging)
+                .dispatcher(dispatcher)
+                .connectionPool(
+                        new ConnectionPool(
+                                connectionPoolSize,
+                                DEFAULT_CONNECTION_IDLE_TIMEOUT.getSeconds(),
+                                TimeUnit.SECONDS));
+        return clientBuilder.build();
     }
 
     /**
@@ -176,6 +207,7 @@ public class ApplicationClient {
                 .post(requestBody)
                 .build();
 
+        logger.info("new request, request id: {}", chatClientRequest.getRequestId());
         String result;
         try (Response response = okHttpClient.newCall(request).execute()) {
             ResponseBody responseBody = response.body();
@@ -232,12 +264,18 @@ public class ApplicationClient {
 
         try {
             EventSource.Factory factory = EventSources.createFactory(this.okHttpClient);
+
+            logger.info("build event request, request id: {}", chatClientRequest.getRequestId());
             Request request = new Request.Builder()
                     .url(this.getEndpoint() + "/v2/app/completions")
                     .headers(headers)
                     .post(requestBody)
                     .build();
+
+            logger.info("new event source, request id: {}", chatClientRequest.getRequestId());
             factory.newEventSource(request, streamEventListener);
+
+            logger.info("after new event source, request id: {}", chatClientRequest.getRequestId());
         } catch (Exception e) {
             throw new BaiLianSdkException(e);
         }
